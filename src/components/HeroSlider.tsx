@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
@@ -59,6 +59,7 @@ const slides = [
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const resumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -70,22 +71,35 @@ const HeroSlider = () => {
     return () => clearInterval(interval);
   }, [isAutoPlaying]);
 
+  useEffect(() => {
+    return () => {
+      if (resumeTimeout.current) {
+        clearTimeout(resumeTimeout.current);
+      }
+    };
+  }, []);
+
+  const pauseAndResume = () => {
+    setIsAutoPlaying(false);
+    if (resumeTimeout.current) {
+      clearTimeout(resumeTimeout.current);
+    }
+    resumeTimeout.current = setTimeout(() => setIsAutoPlaying(true), 10000);
+  };
+
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAndResume();
   };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAndResume();
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    pauseAndResume();
   };
 
   return (

@@ -22,6 +22,7 @@ const Footer = () => {
                 href="https://www.facebook.com/p/SNAV-Tourism-100075677268291/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Visit SNAV Tourism on Facebook"
                 className="p-2 rounded-full bg-primary-foreground/10 hover:bg-accent hover:text-accent-foreground transition-colors"
               >
                 <Facebook className="h-5 w-5" />
@@ -30,6 +31,7 @@ const Footer = () => {
                 href="https://www.instagram.com/snav_tourism"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Visit SNAV Tourism on Instagram"
                 className="p-2 rounded-full bg-primary-foreground/10 hover:bg-accent hover:text-accent-foreground transition-colors"
               >
                 <Instagram className="h-5 w-5" />

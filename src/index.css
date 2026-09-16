@@ -56,18 +56,6 @@ All colors MUST be HSL.
     --ring: 43 74% 52%;
     
     --radius: 0.75rem;
-    
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(217 38% 13% / 0.95), hsl(217 38% 13% / 0.7));
-    --gradient-gold: linear-gradient(135deg, hsl(43 74% 52%), hsl(43 84% 62%));
-    --gradient-emerald: linear-gradient(135deg, hsl(160 42% 27%), hsl(160 42% 37%));
-    
-    /* Shadows */
-    --shadow-elegant: 0 10px 40px -10px hsl(217 38% 13% / 0.2);
-    --shadow-glow: 0 0 30px hsl(43 74% 52% / 0.3);
-    
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {

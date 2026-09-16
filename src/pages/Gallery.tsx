@@ -13,7 +13,7 @@ import packageVaranasi from "@/assets/package-varanasi.jpg";
 import packageLadakh from "@/assets/package-ladakh.jpg";
 import packageRishikesh from "@/assets/package-rishikesh.jpg";
 import packageAndaman from "@/assets/package-andaman.jpg";
-import packageJaipur from "@/assets/pac-jaipur.mp4";
+import packageJaipur from "@/assets/package-jaipur.jpg";
 
 const galleryImages = [
   { src: heroUttarakhand, location: "Uttarakhand", caption: "Sacred temples and Himalayan majesty" },
@@ -27,12 +27,12 @@ const galleryImages = [
   { src: packageVaranasi, location: "Varanasi, Uttar Pradesh", caption: "Spiritual capital on the Ganges" },
   { src: packageLadakh, location: "Ladakh", caption: "High altitude desert and monasteries" },
   { src: packageRishikesh, location: "Rishikesh, Uttarakhand", caption: "Yoga capital and adventure hub" },
+  { src: packageJaipur, location: "Jaipur, Rajasthan", caption: "Pink City royal heritage" },
   { src: packageAndaman, location: "Andaman Islands", caption: "Pristine beaches and coral reefs" },
 ];
 
 const Gallery = () => {
   const [lightboxImage, setLightboxImage] = useState<number | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const openLightbox = (index: number) => {
     setLightboxImage(index);
@@ -106,7 +106,11 @@ const Gallery = () => {
           onClick={closeLightbox}
         >
           <button
-            onClick={closeLightbox}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
+            aria-label="Close lightbox"
             className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
           >
             <X className="h-6 w-6" />
@@ -117,6 +121,7 @@ const Gallery = () => {
               e.stopPropagation();
               prevImage();
             }}
+            aria-label="Previous image"
             className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           >
             <svg
@@ -139,6 +144,7 @@ const Gallery = () => {
               e.stopPropagation();
               nextImage();
             }}
+            aria-label="Next image"
             className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           >
             <svg

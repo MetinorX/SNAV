@@ -40,18 +40,26 @@
 
 | # | Issue | Location | Status |
 |---|-------|----------|--------|
-| 18 | 11 MB of video in `src/assets/` (6.6MB + 4.4MB) bloats bundle | `src/assets/` | |
-| 19 | Gallery imports `.mp4` as `<img>` — video won't display | `src/pages/Gallery.tsx:16,84` | |
-| 20 | Gallery filter state declared but no filter UI exists | `src/pages/Gallery.tsx:35` | |
-| 21 | ~913 lines of commented-out dead code across 5 files | Home, Packages, Contact, Navigation, PackageCard | |
-| 22 | Unused component: `NavLink.tsx` never imported | `src/components/NavLink.tsx` | |
-| 23 | Unused import: `Search` from lucide-react | `src/components/Navigation.tsx:150` | |
-| 24 | Unused import: `packageJaipur` (mp4) in gallery | `src/pages/Gallery.tsx:16` | |
-| 25 | HeroSlider `setTimeout` callbacks not cleaned up on unmount | `src/components/HeroSlider.tsx:76,82,88` | |
-| 26 | `"use client"` directive — Next.js artifact | `src/pages/Contact.tsx:186` | |
-| 27 | Dead CSS variables: `--gradient-*`, `--shadow-*`, `--transition-smooth` | `src/index.css` | |
-| 28 | ~30+ unused npm dependencies (scaffolded UI components never imported) | `package.json` | |
-| 29 | `@tanstack/react-query` wraps app but no component uses it | `src/App.tsx` | |
-| 30 | Missing accessibility: no `aria-label` on mobile menu, social icons, save button | Navigation, Footer, PackageCard | |
-| 31 | Contact form email field not included in WhatsApp message | `src/pages/Contact.tsx:217-223` | |
-| 32 | Gallery close button double-fires (overlay click also triggers close) | `src/pages/Gallery.tsx:106-113` | |
+| 18 | 11 MB of video in `src/assets/` (6.6MB + 4.4MB) bloats bundle | `src/assets/` | Done — moved to `public/videos/`, loaded via `/videos/*.mp4` |
+| 19 | Gallery imports `.mp4` as `<img>` — video won't display | `src/pages/Gallery.tsx:16,84` | Done — uses `package-jaipur.jpg`, no video |
+| 20 | Gallery filter state declared but no filter UI exists | `src/pages/Gallery.tsx:35` | Done — removed dead state |
+| 21 | ~913 lines of commented-out dead code across 5 files | Home, Packages, Contact, Navigation, PackageCard | Done — all removed |
+| 22 | Unused component: `NavLink.tsx` never imported | `src/components/NavLink.tsx` | Done — deleted |
+| 23 | Unused import: `Search` from lucide-react | `src/components/Navigation.tsx:150` | Done — removed |
+| 24 | Unused import: `packageJaipur` (mp4) in gallery | `src/pages/Gallery.tsx:16` | Done — removed |
+| 25 | HeroSlider `setTimeout` callbacks not cleaned up on unmount | `src/components/HeroSlider.tsx:76,82,88` | Done — ref + cleanup on unmount |
+| 26 | `"use client"` directive — Next.js artifact | `src/pages/Contact.tsx:186` | Done — removed (dead code stripped) |
+| 27 | Dead CSS variables: `--gradient-*`, `--shadow-*`, `--transition-smooth` | `src/index.css` | Done — removed |
+| 28 | ~30+ unused npm dependencies (scaffolded UI components never imported) | `package.json` | Done — removed `@tanstack/react-query`, `zod`, `date-fns`, `@hookform/resolvers`; kept shadcn/ui deps (compiled via `ui/*`) |
+| 29 | `@tanstack/react-query` wraps app but no component uses it | `src/App.tsx` | Done — removed provider |
+| 30 | Missing accessibility: no `aria-label` on mobile menu, social icons, save button | Navigation, Footer, PackageCard | Done — added |
+| 31 | Contact form email field not included in WhatsApp message | `src/pages/Contact.tsx:217-223` | Done — email now included (Phase 2) |
+| 32 | Gallery close button double-fires (overlay click also triggers close) | `src/pages/Gallery.tsx:106-113` | Done — `stopPropagation` on all controls |
+
+---
+
+## Build / Lint Status
+
+- `npm run build` passes (Vite 5). JS 340.86 kB (gzip 105.41 kB). No `/pattern.svg` warning anymore.
+- `npm run lint` — 0 errors. 7 pre-existing `react-refresh/only-export-components` warnings in `src/components/ui/*` (shadcn/ui generated files) — left as-is, cosmetic only.
+- Remaining dev-risk cleanup (deferred, not blocking deploy): `npm audit` shows 19 vulnerabilities from stale transitive deps; browserslist data outdated.
