@@ -288,7 +288,7 @@ const PackageCard = ({
 
         {/* Buttons */}
         <div className="flex gap-2 pt-2">
-          <Link to={`/packages/${id}`} className="flex-1">
+          <Link to="/packages" className="flex-1">
             <Button variant="default" size="default" className="w-full">
               View Details
             </Button>

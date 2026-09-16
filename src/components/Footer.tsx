@@ -27,7 +27,7 @@ const Footer = () => {
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="https://www.instagram.com/snav_tourism?"
+                href="https://www.instagram.com/snav_tourism"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-primary-foreground/10 hover:bg-accent hover:text-accent-foreground transition-colors"
@@ -138,21 +138,15 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-primary-foreground/70">
-            © 2025 SNAV Tourism. All rights reserved.
+            © 2026 SNAV Tourism. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <Link
-              to="/privacy"
-              className="text-primary-foreground/70 hover:text-accent transition-colors"
-            >
+            <span className="text-primary-foreground/70">
               Privacy Policy
-            </Link>
-            <Link
-              to="/terms"
-              className="text-primary-foreground/70 hover:text-accent transition-colors"
-            >
+            </span>
+            <span className="text-primary-foreground/70">
               Terms & Conditions
-            </Link>
+            </span>
           </div>
         </div>
       </div>

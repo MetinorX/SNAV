@@ -146,7 +146,7 @@ const About = () => {
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               {[
                 {
-                  number: "15+",
+                  number: "5+",
                   label: "Years Experience",
                 },
                 {

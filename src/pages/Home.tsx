@@ -299,8 +299,8 @@ import { useState } from "react";
 import packageGoa from "@/assets/package-goa.jpg";
 import packageVaranasi from "@/assets/package-varanasi.jpg";
 import packageLadakh from "@/assets/package-ladakh.jpg";
-import packageRishikesh from "@/assets/package-rishikesh.jpg";
-import packageAndaman from "@/assets/package-andaman.jpg";
+import packageKerala from "@/assets/package-kerala.jpg";
+import heroGoldenTemple from "@/assets/hero-golden-temple.jpg";
 import packageJaipur from "@/assets/package-jaipur.jpg";
 import pacKeralaVideo from "@/assets/pac-kerala.mp4";
 import pacJaipurVideo from "@/assets/pac-jaipur.mp4";
@@ -343,7 +343,7 @@ const featuredPackages = [
   },
   {
     id: "kerala-backwaters",
-    image: packageAndaman,
+    image: packageKerala,
     video: pacKeralaVideo,
     title: "Kerala Backwaters & Beaches Retreat",
     location: "Kerala",
@@ -393,7 +393,7 @@ const featuredPackages = [
   },
   {
     id: "golden-temple",
-    image: packageRishikesh,
+    image: heroGoldenTemple,
     title: "Golden Temple & Amritsar Heritage",
     location: "Punjab",
     duration: "4 Days / 3 Nights",

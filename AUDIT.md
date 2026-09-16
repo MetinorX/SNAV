@@ -22,17 +22,17 @@
 
 | # | Issue | Location | Status |
 |---|-------|----------|--------|
-| 7 | "View Details" on all package cards -> 404 (no `/packages/:id` route) | `src/components/PackageCard.tsx:291` | |
-| 8 | Privacy Policy link -> 404 (no `/privacy` route) | `src/components/Footer.tsx:143` | |
-| 9 | Terms & Conditions link -> 404 (no `/terms` route) | `src/components/Footer.tsx:149` | |
-| 10 | Kerala package shows Andaman photo on Home (correct on Packages page) | `src/pages/Home.tsx:347` vs `Packages.tsx:280` | |
-| 11 | Golden Temple package shows Rishikesh photo on Home (correct on Packages page) | `src/pages/Home.tsx:397` vs `Packages.tsx:330` | |
-| 12 | About page: "15+ Years Experience" contradicts "Since 2021" | `src/pages/About.tsx:149` | |
-| 13 | Contact form email collected but discarded from WhatsApp message | `src/pages/Contact.tsx:217-223` | |
-| 14 | Instagram URL has trailing `?` | `src/components/Footer.tsx:30` | |
-| 15 | OG/Twitter images point to lovable.dev placeholder | `index.html:14,18` | |
-| 16 | NotFound.tsx uses `<a href>` instead of `<Link>` — full page reload | `src/pages/NotFound.tsx:16` | |
-| 17 | Copyright year hardcoded as 2025 | `src/components/Footer.tsx:139` | |
+| 7 | "View Details" on all package cards -> 404 (no `/packages/:id` route) | `src/components/PackageCard.tsx:291` | Done — link changed to `/packages` |
+| 8 | Privacy Policy link -> 404 (no `/privacy` route) | `src/components/Footer.tsx:143` | Done — link removed |
+| 9 | Terms & Conditions link -> 404 (no `/terms` route) | `src/components/Footer.tsx:149` | Done — link removed |
+| 10 | Kerala package shows Andaman photo on Home (correct on Packages page) | `src/pages/Home.tsx:347` vs `Packages.tsx:280` | Done — now uses `package-kerala.jpg` |
+| 11 | Golden Temple package shows Rishikesh photo on Home (correct on Packages page) | `src/pages/Home.tsx:397` vs `Packages.tsx:330` | Done — now uses `hero-golden-temple.jpg` |
+| 12 | About page: "15+ Years Experience" contradicts "Since 2021" | `src/pages/About.tsx:149` | Done — changed to 5+ |
+| 13 | Contact form email collected but discarded from WhatsApp message | `src/pages/Contact.tsx:217-223` | Done — email now included |
+| 14 | Instagram URL has trailing `?` | `src/components/Footer.tsx:30` | Done |
+| 15 | OG/Twitter images point to lovable.dev placeholder | `index.html:14,18` | Done — now uses `/logo.png` |
+| 16 | NotFound.tsx uses `<a href>` instead of `<Link>` — full page reload | `src/pages/NotFound.tsx:16` | Done |
+| 17 | Copyright year hardcoded as 2025 | `src/components/Footer.tsx:139` | Done — now 2026 |
 
 ---
 

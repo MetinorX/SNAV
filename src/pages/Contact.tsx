@@ -207,7 +207,7 @@ const Contact = () => {
 
   const handleWhatsApp = (e) => {
     e.preventDefault();
-    const { firstName, phone, message, lastName, subject } = formData;
+    const { firstName, email, phone, message, lastName, subject } = formData;
 
     if (!firstName || !phone || !message) {
       alert("Please fill in First Name, Phone, and Message.");
@@ -217,6 +217,7 @@ const Contact = () => {
     const text = `
       New Inquiry from Contact Form
       Name: ${firstName} ${lastName}
+      Email: ${email || "Not provided"}
       Phone: ${phone}
       Subject: ${subject || "No subject provided"}
       Message: ${message}
