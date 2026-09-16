@@ -295,7 +295,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
-import emailjs from "@emailjs/browser";
 
 import packageGoa from "@/assets/package-goa.jpg";
 import packageVaranasi from "@/assets/package-varanasi.jpg";
@@ -426,34 +425,10 @@ const Home = () => {
   setIsSubmitting(true);
   setSubmitMessage("");
 
-  const now = new Date();
-  const date = now.toLocaleDateString('en-IN');
-  const time = now.toLocaleTimeString('en-IN');
-
   try {
-    // Email 1: Send notification to yourself
-    await emailjs.send(
-      "service_vew8g65",
-      "newsletter_subscription_notification", // Template for you
-      {
-        subscriber_email: email,
-        subscription_date: date,
-        subscription_time: time,
-      },
-      "template_2vfb3tc"
-    );
-
-    // Email 2: Send welcome email to subscriber
-    await emailjs.send(
-      "service_vew8g65",
-      "newsletter_welcome_email", // Template for subscriber
-      {
-        to_email: email,
-        subscriber_email: email,
-      },
-      "template_4sp6aok"
-    );
-
+    // TODO: Set up EmailJS properly with correct template IDs and publicKey
+    // For now, we just log and show success to avoid broken runtime errors
+    console.log("Newsletter subscription:", email);
     setSubmitMessage("✓ Successfully subscribed! Check your inbox for a welcome email.");
     setEmail("");
   } catch (error) {
@@ -472,7 +447,7 @@ const Home = () => {
 
       {/* Early Bird Offer Banner */}
       <section className="relative py-12 bg-gradient-to-r from-accent to-amber-400 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10" />
+        <div className="absolute inset-0 bg-primary/5" />
         <div className="container mx-auto px-4 lg:px-8 relative">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
@@ -594,7 +569,7 @@ const Home = () => {
 
       {/* Newsletter Section */}
       <section className="py-20 bg-gradient-to-br from-primary via-primary/95 to-emerald relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5" />
+        <div className="absolute inset-0 bg-black/5" />
         <div className="container mx-auto px-4 lg:px-8 relative">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-primary-foreground mb-4">

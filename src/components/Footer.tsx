@@ -125,8 +125,10 @@ const Footer = () => {
                 Join Our Travel Community
               </h4>
               <div className="flex gap-2">
-                <Button variant="hero" size="default" onClick="https://www.instagram.com/snav_tourism?">
-                  Subscribe
+                <Button variant="hero" size="default" asChild>
+                  <a href="mailto:snavtourism@gmail.com?subject=Newsletter%20Subscription">
+                    Subscribe
+                  </a>
                 </Button>
               </div>
             </div>
