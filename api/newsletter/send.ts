@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { getLastDigestWeek, getISOWeek, getSubscribers, setLastDigestWeek } from "../_lib/store";
-import { sendMail } from "../_lib/mailer";
-import { fallbackNewsletter, generateNewsletter } from "../_lib/ai";
-import { weeklyNewsletterHtml } from "../_lib/templates";
+import { getLastDigestWeek, getISOWeek, getSubscribers, setLastDigestWeek } from "../_lib/store.js";
+import { sendMail } from "../_lib/mailer.js";
+import { fallbackNewsletter, generateNewsletter } from "../_lib/ai.js";
+import { weeklyNewsletterHtml } from "../_lib/templates.js";
 
 export const config = { maxDuration: 300 };
 

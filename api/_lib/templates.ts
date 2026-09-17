@@ -1,4 +1,4 @@
-﻿import type { NewsletterData } from "./ai";
+﻿import type { NewsletterData } from "./ai.js";
 
 export const escapeHtml = (value: unknown): string => {
   return String(value).replace(/[&<>"']/g, (char) => {

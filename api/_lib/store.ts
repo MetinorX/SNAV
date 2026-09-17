@@ -1,38 +1,106 @@
-import { Redis } from "@upstash/redis";
+import { createClient } from "@supabase/supabase-js";
 
-const SUBSCRIBERS_KEY = "subscribers";
-const LAST_DIGEST_KEY = "lastDigestWeek";
+type Database = {
+  public: {
+    Tables: {
+      subscribers: {
+        Row: { email: string; created_at: string };
+        Insert: { email: string };
+        Update: Partial<{ email: string }>;
+        Relationships: [];
+      };
+      last_digest_week: {
+        Row: { key: string; value: string; updated_at: string };
+        Insert: { key: string; value: string };
+        Update: Partial<{ key: string; value: string }>;
+        Relationships: [];
+      };
+    };
+    Views: { [_ in never]: never };
+    Functions: { [_ in never]: never };
+    Enums: { [_ in never]: never };
+  };
+};
 
-let client: Redis | null = null;
+const SUBSCRIBERS_TABLE = "subscribers";
+const LAST_DIGEST_TABLE = "last_digest_week";
+const LAST_DIGEST_KEY = "digest_week";
 
-const getClient = (): Redis => {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    throw new Error("Upstash Redis env vars are not configured");
+let client: ReturnType<typeof createClient<Database>> | null = null;
+
+const getEnv = (names: string[]): string | undefined => {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) return value;
+  }
+  return undefined;
+};
+
+const getClient = () => {
+  const url = getEnv(["SUPABASE_URL", "VITE_SUPABASE_URL"]);
+  const key = getEnv([
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_ANON_KEY",
+    "VITE_SUPABASE_ANON_KEY",
+  ]);
+  if (!url || !key) {
+    throw new Error("Supabase env vars are not configured");
   }
   if (!client) {
-    client = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
+    client = createClient<Database>(url, key);
   }
   return client;
 };
 
 export const addSubscriber = async (email: string): Promise<boolean> => {
-  const added = await getClient().sadd(SUBSCRIBERS_KEY, email);
-  return added > 0;
+  const { error } = await getClient()
+    .from(SUBSCRIBERS_TABLE)
+    .insert({ email })
+    .select("email")
+    .single();
+  if (error) {
+    if (error.code === "23505") {
+      return false;
+    }
+    throw error;
+  }
+  return true;
 };
 
 export const getSubscribers = async (): Promise<string[]> => {
-  return getClient().smembers(SUBSCRIBERS_KEY);
+  const { data, error } = await getClient()
+    .from(SUBSCRIBERS_TABLE)
+    .select("email");
+  if (error) {
+    throw error;
+  }
+  return (data ?? []).map((row) => row.email as string);
 };
 
 export const getLastDigestWeek = async (): Promise<string | null> => {
-  return getClient().get(LAST_DIGEST_KEY);
+  const { data, error } = await getClient()
+    .from(LAST_DIGEST_TABLE)
+    .select("value")
+    .eq("key", LAST_DIGEST_KEY)
+    .single();
+  if (error) {
+    if (error.code === "PGRST116") {
+      return null;
+    }
+    throw error;
+  }
+  return (data?.value as string | undefined) ?? null;
 };
 
 export const setLastDigestWeek = async (week: string): Promise<void> => {
-  await getClient().set(LAST_DIGEST_KEY, week);
+  const { error } = await getClient()
+    .from(LAST_DIGEST_TABLE)
+    .upsert({ key: LAST_DIGEST_KEY, value: week }, { onConflict: "key" });
+  if (error) {
+    throw error;
+  }
 };
 
 export const getISOWeek = (date: Date): string => {

@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { addSubscriber } from "./_lib/store";
-import { sendMail } from "./_lib/mailer";
-import { welcomeEmailHtml } from "./_lib/templates";
-import { asString, isEmail } from "./_lib/validate";
+import { addSubscriber } from "./_lib/store.js";
+import { sendMail } from "./_lib/mailer.js";
+import { welcomeEmailHtml } from "./_lib/templates.js";
+import { asString, isEmail } from "./_lib/validate.js";
 
 export const config = { maxDuration: 30 };
 
