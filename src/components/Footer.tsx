@@ -135,6 +135,17 @@ const Footer = () => {
           <p className="text-sm text-primary-foreground/70">
             © 2026 SNAV Tourism. All rights reserved.
           </p>
+          <p className="text-sm text-primary-foreground/70">
+            Developed and Managed by{" "}
+            <a
+              href="https://vianratechnologies.tech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent hover:underline transition-colors"
+            >
+              Vianra Technologies
+            </a>
+          </p>
           <div className="flex gap-6 text-sm">
             <span className="text-primary-foreground/70">
               Privacy Policy

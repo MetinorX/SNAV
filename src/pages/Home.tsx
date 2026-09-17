@@ -12,119 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import packageGoa from "@/assets/package-goa.jpg";
-import packageVaranasi from "@/assets/package-varanasi.jpg";
-import packageLadakh from "@/assets/package-ladakh.jpg";
-import packageKerala from "@/assets/package-kerala.jpg";
-import heroGoldenTemple from "@/assets/hero-golden-temple.jpg";
-import packageJaipur from "@/assets/package-jaipur.jpg";
-
-const pacKeralaVideo = "/videos/pac-kerala.mp4";
-const pacJaipurVideo = "/videos/pac-jaipur.mp4";
-
-const featuredPackages = [
-  {
-    id: "kashmir-paradise",
-    image: packageLadakh,
-    title: "Kashmir & Ladakh Himalayan Odyssey",
-    location: "Jammu & Kashmir, Ladakh",
-    duration: "9 Days / 8 Nights",
-    price: 45999,
-    tier: "Elite" as const,
-    rating: 5.0,
-    highlights: [
-      "Dal Lake shikara ride & houseboat stay",
-      "Gulmarg & Sonamarg valley tours",
-      "Leh-Ladakh mountain adventure",
-      "Pangong Lake & Nubra Valley",
-    ],
-    badge: "POPULAR" as const,
-  },
-  {
-    id: "rajasthan-royal",
-    image: packageJaipur,
-    video: pacJaipurVideo,
-    title: "Royal Rajasthan Heritage Circuit",
-    location: "Rajasthan",
-    duration: "8 Days / 7 Nights",
-    price: 35999,
-    tier: "Signature" as const,
-    rating: 4.9,
-    highlights: [
-      "Jaipur Pink City & Amber Fort",
-      "Udaipur City Palace & Lake Pichola",
-      "Jaisalmer Golden Fort & desert safari",
-      "Traditional Rajasthani cuisine",
-    ],
-    badge: "NEW" as const,
-  },
-  {
-    id: "kerala-backwaters",
-    image: packageKerala,
-    video: pacKeralaVideo,
-    title: "Kerala Backwaters & Beaches Retreat",
-    location: "Kerala",
-    duration: "6 Days / 5 Nights",
-    price: 28999,
-    tier: "Signature" as const,
-    rating: 4.8,
-    highlights: [
-      "Alleppey houseboat cruise",
-      "Munnar tea plantation visit",
-      "Ayurvedic spa treatments",
-      "Kovalam beach relaxation",
-    ],
-  },
-  {
-    id: "goa-beaches",
-    image: packageGoa,
-    title: "Goa Beach Paradise & Nightlife",
-    location: "Goa",
-    duration: "5 Days / 4 Nights",
-    price: 22999,
-    tier: "Essential" as const,
-    rating: 4.7,
-    highlights: [
-      "North & South Goa beaches",
-      "Water sports & beach shacks",
-      "Old Goa churches tour",
-      "Sunset cruise on Mandovi River",
-    ],
-    badge: "POPULAR" as const,
-  },
-  {
-    id: "spiritual-india",
-    image: packageVaranasi,
-    title: "Spiritual India: Varanasi & Rishikesh",
-    location: "Uttar Pradesh, Uttarakhand",
-    duration: "7 Days / 6 Nights",
-    price: 32999,
-    tier: "Signature" as const,
-    rating: 4.9,
-    highlights: [
-      "Varanasi Ganga Aarti & boat ride",
-      "Rishikesh yoga & meditation",
-      "River rafting adventure",
-      "Temple & ashram visits",
-    ],
-  },
-  {
-    id: "golden-temple",
-    image: heroGoldenTemple,
-    title: "Golden Temple & Amritsar Heritage",
-    location: "Punjab",
-    duration: "4 Days / 3 Nights",
-    price: 19999,
-    tier: "Essential" as const,
-    rating: 4.8,
-    highlights: [
-      "Golden Temple darshan & langar",
-      "Wagah Border ceremony",
-      "Jallianwala Bagh memorial",
-      "Traditional Punjabi cuisine",
-    ],
-  },
-];
+import { tourPackages } from "@/data/packages";
 
 const Home = () => {
   return (
@@ -155,8 +43,8 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredPackages.map((pkg) => (
-              <PackageCard key={pkg.id} {...pkg} />
+            {tourPackages.slice(0, 3).map((pkg) => (
+              <PackageCard key={pkg.slug} pkg={pkg} />
             ))}
           </div>
 
