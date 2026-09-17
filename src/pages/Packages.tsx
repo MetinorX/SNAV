@@ -1,5 +1,6 @@
 import { useState } from "react";
 import PackageCard from "@/components/PackageCard";
+import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Filter, SlidersHorizontal } from "lucide-react";
 
@@ -130,6 +131,11 @@ const Packages = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <Seo
+        title="Tour Packages | SNAV Tourism"
+        description="Explore handcrafted India tour packages by SNAV Tourism - Kashmir & Ladakh, Royal Rajasthan, Kerala backwaters, Goa beaches, Golden Temple, Varanasi & more. Book your dream trip today."
+        path="/packages"
+      />
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in-up">

@@ -58,8 +58,25 @@
 
 ---
 
+## Phase 4: SEO, Sitemap & Dependency Hygiene (Batch A)
+
+| # | Item | Status |
+|---|------|--------|
+| 33 | New `<Seo>` component (zero-dep): per-route title/description/canonical/OG/Twitter | `src/components/Seo.tsx` — Done |
+| 34 | `<Seo>` wired into Home, Packages, Contact, About, Gallery, NotFound | Done |
+| 35 | JSON-LD `TravelAgency` + `WebSite` schema in `index.html` | Done |
+| 36 | `og:url` + absolute `og:image`/`twitter:image` → `https://snavtourism.in/logo.png` | Done |
+| 37 | `public/sitemap.xml` (7 routes) | Done |
+| 38 | `robots.txt` → `Sitemap:` line | Done |
+| 39 | `npx update-browserslist-db` | Done — no target changes, stale warning gone |
+| 40 | `npm audit fix` + `react-router-dom` 6.30.1 → 6.30.6 — clears XSS/open-redirect (high) in `@remix-run/router` | Done — 18 → 17 remaining |
+
+**Remaining audit (17, dev-only):** all in build tooling (`eslint` toolchain, `vite`/`esbuild`, `postcss`, `tailwindcss`, `rollup`, `browserslist`, etc.). Not shipped to production. Fixing needs `npm audit fix --force` → breaking Vite major upgrade; deferred intentionally.
+
+---
+
 ## Build / Lint Status
 
-- `npm run build` passes (Vite 5). JS 340.86 kB (gzip 105.41 kB). No `/pattern.svg` warning anymore.
+- `npm run build` passes (Vite 5). JS 342.95 kB (gzip 106.02 kB). No `/pattern.svg` warning anymore.
 - `npm run lint` — 0 errors. 7 pre-existing `react-refresh/only-export-components` warnings in `src/components/ui/*` (shadcn/ui generated files) — left as-is, cosmetic only.
-- Remaining dev-risk cleanup (deferred, not blocking deploy): `npm audit` shows 19 vulnerabilities from stale transitive deps; browserslist data outdated.
+- `npm audit`: 17 remaining (dev-only build tooling); prod runtime deps clean after `react-router-dom` 6.30.6 (Batch A).

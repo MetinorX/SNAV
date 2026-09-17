@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
+import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +43,11 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <Seo
+        title="Contact Us | SNAV Tourism"
+        description="Get in touch with SNAV Tourism for custom India travel itineraries. Call +91 8652885584, email snavtourism@gmail.com or send us a message on WhatsApp."
+        path="/contact"
+      />
       <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
         
         {/* Header */}

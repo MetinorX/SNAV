@@ -11,12 +11,65 @@
     <meta property="og:title" content="SNAV Tourism - Premium India Travel Experiences" />
     <meta property="og:description" content="Discover luxury travel experiences across Incredible India. From Kashmir to Kerala, Rajasthan to Tamil Nadu." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/logo.png" />
+    <meta property="og:url" content="https://snavtourism.in/" />
+    <meta property="og:image" content="https://snavtourism.in/logo.png" />
+    <meta property="og:image:alt" content="SNAV Tourism logo" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@SNAVTourism" />
-    <meta name="twitter:image" content="/logo.png" />
+    <meta name="twitter:image" content="https://snavtourism.in/logo.png" />
     <link rel="icon" type="image/png" href="/logo.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "TravelAgency",
+            "@id": "https://snavtourism.in/#agency",
+            "name": "SNAV Tourism",
+            "url": "https://snavtourism.in/",
+            "logo": "https://snavtourism.in/logo.png",
+            "image": "https://snavtourism.in/logo.png",
+            "telephone": "+918652885584",
+            "email": "snavtourism@gmail.com",
+            "priceRange": "INR 20,000 - 60,000",
+            "currenciesAccepted": "INR",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Gopi Cine Mall, 210, Dombivli West",
+              "addressLocality": "Dombivli",
+              "addressRegion": "Maharashtra",
+              "postalCode": "421202",
+              "addressCountry": "IN"
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                "opens": "09:00",
+                "closes": "18:00"
+              },
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": "Saturday",
+                "opens": "10:00",
+                "closes": "16:00"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://snavtourism.in/#website",
+            "url": "https://snavtourism.in/",
+            "name": "SNAV Tourism",
+            "publisher": {
+              "@id": "https://snavtourism.in/#agency"
+            }
+          }
+        ]
+      }
+    </script>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

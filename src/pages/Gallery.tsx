@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import Seo from "@/components/Seo";
 
 import heroUttarakhand from "@/assets/hero-uttarakhand.jpg";
 import heroManali from "@/assets/hero-manali.jpg";
@@ -60,6 +61,11 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <Seo
+        title="Travel Gallery | SNAV Tourism"
+        description="Browse stunning destination photos from SNAV Tourism - Kashmir, Kerala, Rajasthan, Golden Temple, Goa, Ladakh and more across Incredible India."
+        path="/gallery"
+      />
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in-up">

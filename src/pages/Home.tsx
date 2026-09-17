@@ -1,5 +1,6 @@
 import HeroSlider from "@/components/HeroSlider";
 import PackageCard from "@/components/PackageCard";
+import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -159,6 +160,10 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <Seo
+        title="SNAV Tourism - Premium India Travel Experiences | Kashmir, Rajasthan, Kerala & More"
+        description="Discover Incredible India with SNAV Tourism. Luxury travel experiences from Himalayan peaks to tropical beaches. Explore Kashmir, Rajasthan, Kerala, Golden Temple, Goa & more."
+      />
       {/* Hero Slider */}
       <HeroSlider />
 

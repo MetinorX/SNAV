@@ -1,10 +1,16 @@
 import { Award, Globe, Heart, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Seo from "@/components/Seo";
 import { Link } from "react-router-dom";
 
 const About = () => {
   return (
     <div className="min-h-screen pt-24 pb-16">
+      <Seo
+        title="About Us | SNAV Tourism"
+        description="SNAV Tourism is a boutique India travel agency crafting authentic journeys since 2021. Trusted by thousands of travellers for Kashmir, Rajasthan, Kerala & beyond."
+        path="/about"
+      />
       {/* Hero Section */}
       <section className="container mx-auto px-4 lg:px-8 mb-20">
         <div className="text-center max-w-4xl mx-auto animate-fade-in-up">
