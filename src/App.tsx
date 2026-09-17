@@ -10,6 +10,8 @@ import Packages from "./pages/Packages";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
 import Gallery from "./pages/Gallery";
+import Destinations from "./pages/Destinations";
+import CustomTrips from "./pages/CustomTrips";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -26,10 +28,8 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/gallery" element={<Gallery />} />
-            {/* Placeholder routes for future pages */}
-            <Route path="/custom-trips" element={<Contact />} />
-            <Route path="/destinations" element={<Packages />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/custom-trips" element={<CustomTrips />} />
+            <Route path="/destinations" element={<Destinations />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

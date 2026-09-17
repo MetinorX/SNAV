@@ -100,8 +100,22 @@
 
 ---
 
+## Phase 6: Destinations Page & Custom Trip Builder (Batch C)
+
+| # | Item | Status |
+|---|------|--------|
+| 54 | `src/pages/Destinations.tsx` — 8 destinations (Uttarakhand, Manali, Kashmir, Rajasthan, Golden Temple·Amritsar, Kerala, Tamil Nadu, Goa) using existing `hero-*`/`package-*` images, each with region badge, best-time, tagline + 3 highlights, "View Packages" CTA | Done |
+| 55 | Destinations: bottom CTA banner → `/custom-trips`; `<Seo />` `/destinations` | Done |
+| 56 | `src/pages/CustomTrips.tsx` — 5-step wizard (Destinations chips → date+duration → travelers+budget slider → interests → contact), progress bar, per-step validation, back/continue | Done |
+| 57 | CustomTrips submit — builds trip brief, opens WhatsApp (`wa.me/8652885584`) **and** `POST /api/contact`, toasts success/warning, resets state | Done |
+| 58 | CustomTrips uses shadcn Card/Button/Input/Textarea/Label/Badge/Select/Slider/Popover/Calendar/Progress + `sonner` toast; `<Seo />` `/custom-trips` | Done |
+| 59 | `App.tsx` — placeholders swapped: `/custom-trips` → CustomTrips, `/destinations` → Destinations | Done |
+| 60 | Bundle note: JS now 475.34 kB (gzip 146.73 kB) — calendar/day-picker pulled in. Code-splitting (`React.lazy`) deferred to a later performance batch | Note |
+
+---
+
 ## Build / Lint Status
 
-- `npm run build` passes (Vite 5). JS 342.95 kB (gzip 106.02 kB). No `/pattern.svg` warning anymore.
+- `npm run build` passes (Vite 5). JS 475.34 kB (gzip 146.73 kB) after Batch C pages (no `/pattern.svg` warning).
 - `npm run lint` — 0 errors. 7 pre-existing `react-refresh/only-export-components` warnings in `src/components/ui/*` (shadcn/ui generated files) — left as-is, cosmetic only.
 - `npm audit`: 21 remaining (dev-only build tooling); prod runtime deps clean after `react-router-dom` 6.30.6 (Batch A).
