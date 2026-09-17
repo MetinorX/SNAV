@@ -9,7 +9,6 @@ import {
   Clock,
   HeadphonesIcon,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 
@@ -136,38 +135,6 @@ const Home = () => {
       />
       {/* Hero Slider */}
       <HeroSlider />
-
-      {/* Early Bird Offer Banner */}
-      <section className="relative py-12 bg-gradient-to-r from-accent to-amber-400 overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5" />
-        <div className="container mx-auto px-4 lg:px-8 relative">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <div className="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full mb-4">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <span className="font-semibold text-primary">
-                  LIMITED TIME OFFER
-                </span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-display font-bold text-primary mb-2">
-                Early Bird Special: Save up to 25%
-              </h2>
-              <p className="text-lg text-primary/80">
-                Book your Incredible India journey now and enjoy exclusive discounts
-              </p>
-            </div>
-            <Link to="/packages">
-              <Button
-                variant="default"
-                size="xl"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-xl"
-              >
-                Claim Your Offer
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Featured Packages */}
       <section className="py-20 bg-cream">
