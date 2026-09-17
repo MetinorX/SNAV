@@ -1,8 +1,10 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { getLastDigestWeek, getISOWeek, getSubscribers, setLastDigestWeek } from "../_lib/store.js";
 import { sendMail } from "../_lib/mailer.js";
 import { fallbackNewsletter, generateNewsletter } from "../_lib/ai.js";
-import { weeklyNewsletterHtml } from "../_lib/templates.js";
+import { weeklyNewsletterHtml, heroFor, HERO_CID } from "../_lib/templates.js";
 
 export const config = { maxDuration: 300 };
 
@@ -40,13 +42,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const subject = `${content.subject} | SNAV Tourism`;
-    const html = weeklyNewsletterHtml(content);
+
+    let heroData: Buffer | null = null;
+    let heroFile = "";
+    try {
+      heroFile = heroFor(content.destinations[0]?.name);
+      heroData = fs.readFileSync(path.join(process.cwd(), "src", "assets", heroFile));
+    } catch {
+      heroData = null;
+    }
+
+    const html = weeklyNewsletterHtml(
+      content,
+      heroData
+        ? { heroCid: HERO_CID, heroAlt: content.destinations[0]?.name ?? "Destinations to explore" }
+        : undefined
+    );
+    const attachments = heroData
+      ? [{ filename: heroFile, content: heroData, cid: HERO_CID }]
+      : undefined;
 
     const failed: string[] = [];
     let sent = 0;
     for (const email of subscribers) {
       try {
-        await sendMail({ to: email, subject, html });
+        await sendMail({ to: email, subject, html, ...(attachments ? { attachments } : {}) });
         sent += 1;
       } catch {
         failed.push(email);

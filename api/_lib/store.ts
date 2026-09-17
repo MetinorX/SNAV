@@ -15,6 +15,12 @@ type Database = {
         Update: Partial<{ key: string; value: string }>;
         Relationships: [];
       };
+      custom_trips: {
+        Row: { id: string; name: string; email: string; phone: string; status: string; payload: unknown; created_at: string };
+        Insert: { name: string; email: string; phone: string; status: string; payload: unknown };
+        Update: Partial<{ status: string }>;
+        Relationships: [];
+      };
     };
     Views: { [_ in never]: never };
     Functions: { [_ in never]: never };
@@ -25,6 +31,7 @@ type Database = {
 const SUBSCRIBERS_TABLE = "subscribers";
 const LAST_DIGEST_TABLE = "last_digest_week";
 const LAST_DIGEST_KEY = "digest_week";
+const CUSTOM_TRIPS_TABLE = "custom_trips";
 
 let client: ReturnType<typeof createClient<Database>> | null = null;
 
@@ -101,6 +108,26 @@ export const setLastDigestWeek = async (week: string): Promise<void> => {
   if (error) {
     throw error;
   }
+};
+
+export interface CustomTripRow {
+  name: string;
+  email: string;
+  phone: string;
+  status: string;
+  payload: unknown;
+}
+
+export const storeCustomTrip = async (row: CustomTripRow): Promise<string> => {
+  const { data, error } = await getClient()
+    .from(CUSTOM_TRIPS_TABLE)
+    .insert({ name: row.name, email: row.email, phone: row.phone, status: row.status, payload: row.payload })
+    .select("id")
+    .single();
+  if (error) {
+    throw error;
+  }
+  return (data?.id as string | undefined) ?? "";
 };
 
 export const getISOWeek = (date: Date): string => {

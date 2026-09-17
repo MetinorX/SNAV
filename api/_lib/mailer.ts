@@ -1,10 +1,17 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 
+export interface MailAttachment {
+  filename?: string;
+  content: Buffer | string;
+  cid: string;
+}
+
 export interface MailOptions {
   to: string;
   subject: string;
   html: string;
+  attachments?: MailAttachment[];
 }
 
 let transport: Transporter | null = null;
@@ -42,5 +49,6 @@ export const sendMail = async (options: MailOptions): Promise<void> => {
     to: options.to,
     subject: options.subject,
     html: options.html,
+    ...(options.attachments ? { attachments: options.attachments } : {}),
   });
 };

@@ -1,446 +1,289 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { TripChat } from "@/components/trips/TripChat";
+import { ItineraryPanel } from "@/components/trips/ItineraryPanel";
+import { TripContact } from "@/components/trips/TripContact";
 import { toast } from "sonner";
-import { CalendarDays, ChevronLeft, ChevronRight, Minus, Plus, Send, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ChevronLeft, RotateCcw, Sparkles } from "lucide-react";
+import type { ChatMessage, TripItinerary, TripProfile } from "@/components/trips/types";
 
-const destinationOptions = [
-  "Uttarakhand",
-  "Manali",
-  "Kashmir",
-  "Rajasthan",
-  "Golden Temple · Amritsar",
-  "Kerala",
-  "Tamil Nadu",
-  "Goa",
-];
+const STORAGE_KEY = "snav-custom-trip-v1";
 
-const interestOptions = [
-  "Adventure",
-  "Heritage",
-  "Beaches",
-  "Spiritual",
-  "Wildlife",
-  "Luxury",
-  "Honeymoon",
-  "Food",
-];
-
-const durationOptions = [
-  { value: "3", label: "3 days" },
-  { value: "5", label: "5 days" },
-  { value: "7", label: "7 days" },
-  { value: "10", label: "10 days" },
-  { value: "14", label: "14 days" },
-];
-
-const TOTAL_STEPS = 5;
-const MIN_BUDGET = 10000;
-const MAX_BUDGET = 250000;
-
-interface ContactInfo {
-  name: string;
-  phone: string;
-  email: string;
-  notes: string;
+interface PersistedState {
+  messages: ChatMessage[];
+  profile: Partial<TripProfile>;
+  readyForItinerary: boolean;
+  itinerary: TripItinerary | null;
+  phase: "chat" | "preview" | "contact";
 }
 
-const emptyContact: ContactInfo = { name: "", phone: "", email: "", notes: "" };
+const greeting: ChatMessage = {
+  role: "assistant",
+  content:
+    "Namaste! I'm Aria, your SNAV trip designer. Let's shape a trip that feels like you — a destination, a season, a few days, or just the start of a dream all work. What's on your mind?",
+};
+
+const freshState = (): PersistedState => ({
+  messages: [greeting],
+  profile: {},
+  readyForItinerary: false,
+  itinerary: null,
+  phase: "chat",
+});
+
+const loadState = (): PersistedState => {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<PersistedState>;
+      if (parsed && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
+        return {
+          messages: parsed.messages,
+          profile: parsed.profile ?? {},
+          readyForItinerary: Boolean(parsed.readyForItinerary),
+          itinerary: parsed.itinerary ?? null,
+          phase: parsed.phase === "preview" || parsed.phase === "contact" ? parsed.phase : "chat",
+        };
+      }
+    }
+  } catch {
+    // ignore corrupted storage
+  }
+  return freshState();
+};
+
+const phases = ["Discover", "Your plan", "Share"];
+const phaseIndex = (phase: PersistedState["phase"]): number => (phase === "chat" ? 0 : phase === "preview" ? 1 : 2);
+
+const buildWhatsAppSummary = (
+  profile: Partial<TripProfile>,
+  itinerary: TripItinerary,
+  contact: { name: string; phone: string; email: string }
+): string =>
+  [
+    "Custom Trip Request",
+    profile.destination ? `Destinations: ${profile.destination}` : "",
+    profile.month ? `Time of year: ${profile.month}` : "",
+    profile.durationDays ? `Duration: ${profile.durationDays} day(s)` : "",
+    profile.travelers ? `Travelers: ${profile.travelers}${profile.travelerNote ? ` (${profile.travelerNote})` : ""}` : "",
+    profile.budgetPerPerson ? `Budget: Rs. ${profile.budgetPerPerson.toLocaleString("en-IN")} per person` : "",
+    profile.interests.length > 0 ? `Interests: ${profile.interests.join(", ")}` : "",
+    profile.occasion ? `Occasion: ${profile.occasion}` : "",
+    `Plan: ${itinerary.title} (${itinerary.days.length} days)`,
+    "---",
+    `Name: ${contact.name}`,
+    `Phone: ${contact.phone}`,
+    `Email: ${contact.email}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
 const CustomTrips = () => {
-  const [step, setStep] = useState(1);
-  const [destinations, setDestinations] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [duration, setDuration] = useState("7");
-  const [travelers, setTravelers] = useState(2);
-  const [budget, setBudget] = useState(50000);
-  const [interests, setInterests] = useState<string[]>([]);
-  const [contact, setContact] = useState<ContactInfo>(emptyContact);
+  const [state, setState] = useState<PersistedState>(loadState);
+  const [sending, setSending] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toggleInList = (list: string[], value: string, setList: (next: string[]) => void) => {
-    setList(list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
-  };
-
-  const emailValidCheck = (value: string) => /.+@.+\..+/.test(value);
-
-  const canProceed = (): boolean => {
-    if (step === 1) return destinations.length > 0;
-    if (step === 2) return Boolean(startDate);
-    if (step === 3) return travelers >= 1 && budget >= MIN_BUDGET;
-    if (step === 4) return interests.length > 0;
-    if (step === 5) {
-      const nameValid = contact.name.trim().length >= 2;
-      const phoneValid = /^[6-9]\d{9}$/.test(contact.phone.trim());
-      const emailValid = emailValidCheck(contact.email.trim());
-      return nameValid && phoneValid && emailValid;
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // storage full or unavailable — chat still works
     }
-    return false;
-  };
+  }, [state]);
 
-  const handleNext = () => {
-    if (!canProceed()) {
-      toast.error("Please complete the required fields for this step.");
-      return;
+  const handleSend = async (content: string) => {
+    const messages: ChatMessage[] = [...state.messages, { role: "user", content }];
+    setState((current) => ({ ...current, messages }));
+    setSending(true);
+    try {
+      const response = await fetch("/api/custom-trip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "chat", messages }),
+      });
+      const data = (await response.json()) as {
+        ok?: boolean;
+        reply?: string;
+        profile?: Partial<TripProfile>;
+        readyForItinerary?: boolean;
+      };
+      if (response.ok && data.reply) {
+        setState((current) => ({
+          ...current,
+          messages: [...messages, { role: "assistant", content: data.reply as string }],
+          profile: { ...current.profile, ...(data.profile ?? {}) },
+          readyForItinerary: Boolean(data.readyForItinerary),
+        }));
+      } else {
+        toast.error("Aria lost her train of thought — please try sending that again.");
+      }
+    } catch {
+      toast.error("We couldn't reach Aria just now. Please try again in a moment.");
+    } finally {
+      setSending(false);
     }
-    setStep((current) => Math.min(current + 1, TOTAL_STEPS));
   };
 
-  const handleBack = () => setStep((current) => Math.max(current - 1, 1));
-
-  const buildSummary = (): string => {
-    return [
-      "Custom Trip Request",
-      `Destinations: ${destinations.join(", ")}`,
-      `Start date: ${startDate ? startDate.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Flexible"}`,
-      `Duration: ${duration} day(s)`,
-      `Travelers: ${travelers}`,
-      `Budget: Rs. ${budget.toLocaleString("en-IN")} per person`,
-      `Interests: ${interests.join(", ") || "Not specified"}`,
-      "---",
-      `Name: ${contact.name}`,
-      `Phone: ${contact.phone}`,
-      `Email: ${contact.email}`,
-      contact.notes.trim() ? `Notes: ${contact.notes.trim()}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
+  const generateItinerary = async (refineHint?: string) => {
+    setGenerating(true);
+    try {
+      const response = await fetch("/api/custom-trip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "preview", profile: state.profile, refineHint }),
+      });
+      const data = (await response.json()) as { ok?: boolean; itinerary?: TripItinerary };
+      if (response.ok && data.itinerary) {
+        setState((current) => ({ ...current, itinerary: data.itinerary as TripItinerary, phase: "preview" }));
+      } else {
+        toast.error("The itinerary draft didn't come together. Mind trying once more?");
+      }
+    } catch {
+      toast.error("We couldn't draft your plan just now. Please try again.");
+    } finally {
+      setGenerating(false);
+    }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (contact: { name: string; phone: string; email: string }) => {
+    if (!state.itinerary) return;
     setIsSubmitting(true);
-    const summary = buildSummary();
-
+    const summary = buildWhatsAppSummary(state.profile, state.itinerary, contact);
     window.open(`https://wa.me/8652885584?text=${encodeURIComponent(summary)}`, "_blank");
 
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("/api/custom-trip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "submit",
           name: contact.name,
           email: contact.email,
           phone: contact.phone,
-          subject: "Custom Trip Request",
-          message: summary,
+          profile: state.profile,
+          itinerary: state.itinerary,
+          transcript: state.messages,
         }),
       });
       if (response.ok) {
-        toast.success("Trip brief sent! We'll get back to you within 24 hours.");
+        toast.success("Trip brief sent to our team! We'll get back to you within 24 hours.");
       } else {
-        toast.warning("Your WhatsApp message opened — the email copy couldn't be sent. We'll text you back.");
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        toast.warning(data?.error ?? "Your WhatsApp message opened — the email copy couldn't be sent. We'll text you back.");
       }
     } catch {
       toast.warning("Your WhatsApp message opened — the email copy couldn't be sent. We'll text you back.");
     } finally {
       setIsSubmitting(false);
-      setDestinations([]);
-      setStartDate(undefined);
-      setDuration("7");
-      setTravelers(2);
-      setBudget(50000);
-      setInterests([]);
-      setContact(emptyContact);
-      setStep(1);
+      setState(freshState());
     }
   };
 
-  const stepLabels = ["Destinations", "Plan details", "Travelers & budget", "Interests", "Contact"];
+  const handleReset = () => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    setState(freshState());
+    toast.message("Fresh start — a new blank slate.");
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-16">
       <Seo
         title="Custom Trip Builder | SNAV Tourism"
-        description="Design your own India itinerary with SNAV Tourism's custom trip builder. Choose destinations, dates, travelers, budget and interests - get a personalized plan on WhatsApp."
+        description="Design your own India itinerary with SNAV Tourism's AI trip designer. Chat with Aria, refine your day-by-day plan, and get it confirmed by our experts."
         path="/custom-trips"
       />
-      <div className="container mx-auto px-4 lg:px-8 max-w-3xl">
-        <div className="text-center mb-10 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-4">
+      <div className="container mx-auto max-w-3xl px-4 lg:px-8">
+        <div className="mb-10 text-center animate-fade-in-up">
+          <h1 className="mb-4 font-serif text-4xl font-bold text-foreground md:text-5xl">
             Build Your Custom Trip
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Five quick steps. Tell us what you love, and our experts will craft the perfect itinerary.
+          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
+            Chat with Aria, our AI trip designer. Describe the trip you're dreaming of and refine a one-of-a-kind plan before our experts make it real.
           </p>
         </div>
 
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-accent">
-              Step {step} of {TOTAL_STEPS}
-            </span>
-            <span className="text-sm text-muted-foreground">{stepLabels[step - 1]}</span>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-semibold text-accent">{phases[phaseIndex(state.phase)]}</span>
+            <Button variant="ghost" size="sm" onClick={handleReset} disabled={sending || generating || isSubmitting} className="gap-1.5">
+              <RotateCcw className="h-3.5 w-3.5" />
+              Start over
+            </Button>
           </div>
-          <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
+          <Progress value={((phaseIndex(state.phase) + 1) / phases.length) * 100} className="h-2" />
         </div>
 
         <Card className="shadow-md animate-fade-in-up">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-2xl font-serif">{stepLabels[step - 1]}</CardTitle>
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl font-serif">
+              {state.phase === "chat" && "Tell Aria about your dream trip"}
+              {state.phase === "preview" && "Your personalized plan"}
+              {state.phase === "contact" && "Where should we send it?"}
+            </CardTitle>
             <CardDescription>
-              {step === 1 && "Pick one or more destinations for your journey."}
-              {step === 2 && "When would you like to go, and for how long?"}
-              {step === 3 && "Who's coming along, and how much per person?"}
-              {step === 4 && "What kind of experiences matter most to you?"}
-              {step === 5 && "Where should we send your personalized plan?"}
+              {state.phase === "chat" && "Answer in your own words — Aria will ask follow-ups one at a time."}
+              {state.phase === "preview" && "This is just a first draft. Tell Aria how to shape it."}
+              {state.phase === "contact" && "Our experts will review your brief and get back to you within 24 hours."}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {step === 1 && (
-              <div className="flex flex-wrap gap-3">
-                {destinationOptions.map((destination) => {
-                  const active = destinations.includes(destination);
-                  return (
-                    <button
-                      key={destination}
-                      type="button"
-                      onClick={() => toggleInList(destinations, destination, setDestinations)}
-                      aria-pressed={active}
-                      className={cn(
-                        "px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer",
-                        active
-                          ? "bg-primary text-primary-foreground border-primary shadow-md"
-                          : "bg-background text-foreground border-border hover:border-accent hover:text-accent"
-                      )}
-                    >
-                      {destination}
-                    </button>
-                  );
-                })}
-              </div>
+          <CardContent>
+            {state.phase === "chat" && (
+              <TripChat
+                messages={state.messages}
+                sending={sending}
+                readyForItinerary={state.readyForItinerary}
+                generating={generating}
+                profile={state.profile}
+                onSend={handleSend}
+                onGenerate={() => generateItinerary()}
+                onReset={handleReset}
+              />
             )}
-
-            {step === 2 && (
-              <div className="grid gap-8">
-                <div className="space-y-3">
-                  <Label>Preferred start date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start gap-2 font-normal",
-                          !startDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarDays className="h-4 w-4" />
-                        {startDate
-                          ? startDate.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
-                          : "Pick a date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        disabled={{ before: new Date() }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-3">
-                  <Label>Duration</Label>
-                  <Select value={duration} onValueChange={setDuration}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="How many days?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+            {state.phase === "preview" && state.itinerary && (
+              <ItineraryPanel
+                itinerary={state.itinerary}
+                generating={generating}
+                onRefine={(hint) => generateItinerary(hint)}
+                onConfirm={() => setState((current) => ({ ...current, phase: "contact" }))}
+              />
             )}
-
-            {step === 3 && (
-              <div className="grid gap-10">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Travelers</Label>
-                    <span className="text-sm font-semibold text-accent">{travelers}</span>
-                  </div>
-                  <div className="flex items-center gap-8 justify-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setTravelers((count) => Math.max(1, count - 1))}
-                      aria-label="Remove a traveler"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <div className="flex items-center gap-2 text-2xl font-bold">
-                      <Users className="h-6 w-6 text-accent" />
-                      {travelers}
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setTravelers((count) => Math.min(20, count + 1))}
-                      aria-label="Add a traveler"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Budget per person</Label>
-                    <span className="text-sm font-semibold text-accent">
-                      Rs. {budget.toLocaleString("en-IN")}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[budget]}
-                    onValueChange={(values) => setBudget(values[0])}
-                    min={MIN_BUDGET}
-                    max={MAX_BUDGET}
-                    step={5000}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Rs. {MIN_BUDGET.toLocaleString("en-IN")}</span>
-                    <span>Rs. {MAX_BUDGET.toLocaleString("en-IN")}+</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 4 && (
-              <div className="flex flex-wrap gap-3">
-                {interestOptions.map((interest) => {
-                  const active = interests.includes(interest);
-                  return (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => toggleInList(interests, interest, setInterests)}
-                      aria-pressed={active}
-                      className={cn(
-                        "px-4 py-2.5 rounded-full text-sm font-medium border transition-all duration-200 cursor-pointer",
-                        active
-                          ? "bg-accent text-accent-foreground border-accent shadow-md"
-                          : "bg-background text-foreground border-border hover:border-accent hover:text-accent"
-                      )}
-                    >
-                      {interest}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {step === 5 && (
-              <div className="grid gap-5">
-                <div className="space-y-2">
-                  <Label htmlFor="trip-name">Your name *</Label>
-                  <Input
-                    id="trip-name"
-                    value={contact.name}
-                    onChange={(e) => setContact({ ...contact, name: e.target.value })}
-                    placeholder="e.g. Priya Sharma"
-                  />
-                </div>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="trip-phone">Phone (WhatsApp) *</Label>
-                    <Input
-                      id="trip-phone"
-                      type="tel"
-                      value={contact.phone}
-                      onChange={(e) => setContact({ ...contact, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
-                      placeholder="10-digit mobile number"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="trip-email">Email *</Label>
-                    <Input
-                      id="trip-email"
-                      type="email"
-                      value={contact.email}
-                      onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="trip-notes">Anything else?</Label>
-                  <Textarea
-                    id="trip-notes"
-                    value={contact.notes}
-                    onChange={(e) => setContact({ ...contact, notes: e.target.value })}
-                    placeholder="Dietary needs, hotel preferences, special occasions..."
-                    className="min-h-[110px]"
-                  />
-                </div>
+            {state.phase === "contact" && state.itinerary && (
+              <div className="space-y-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setState((current) => ({ ...current, phase: "preview" }))}
+                  disabled={isSubmitting}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Back to your plan
+                </Button>
+                <TripContact
+                  itinerary={state.itinerary}
+                  profile={state.profile}
+                  isSubmitting={isSubmitting}
+                  onBack={() => setState((current) => ({ ...current, phase: "preview" }))}
+                  onSubmit={handleSubmit}
+                />
               </div>
             )}
           </CardContent>
         </Card>
 
-        <div className="mt-8 flex items-center justify-between gap-4">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={step === 1}
-            className="gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back
-          </Button>
-          {step < TOTAL_STEPS ? (
-            <Button onClick={handleNext} className="gap-2">
-              Continue
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2">
-              <Send className="h-4 w-4" />
-              {isSubmitting ? "Sending..." : "Send via WhatsApp"}
-            </Button>
-          )}
-        </div>
-
-        {step === 5 && (
-          <div className="mt-6 space-y-2 rounded-xl bg-muted p-5 text-sm text-muted-foreground">
-            <p className="font-semibold text-foreground">Your request summary</p>
-            {buildSummary()
-              .split("\n")
-              .filter(Boolean)
-              .map((line) => (
-                <div key={line} className="flex items-start gap-2">
-                  <Badge className="mt-1.5 h-1.5 w-1.5 rounded-full p-0" />
-                  <span>{line}</span>
-                </div>
-              ))}
-          </div>
+        {state.phase !== "chat" && state.itinerary && (
+          <p className="mt-6 flex items-center justify-center gap-2 text-center text-sm text-muted-foreground">
+            <Sparkles className="h-4 w-4 text-accent" />
+            Drafted by SNAV's AI, perfected by our experts.
+          </p>
         )}
       </div>
     </div>

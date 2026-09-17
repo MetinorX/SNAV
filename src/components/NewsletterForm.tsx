@@ -33,8 +33,14 @@ const NewsletterForm = ({ variant = "hero" }: NewsletterFormProps) => {
       });
 
       if (response.ok) {
-        setStatus("success");
-        setMessage("Successfully subscribed! Check your inbox for a welcome email.");
+        const data = (await response.json().catch(() => null)) as { alreadySubscribed?: boolean } | null;
+        if (data?.alreadySubscribed) {
+          setStatus("success");
+          setMessage("You're already on our list — welcome back!");
+        } else {
+          setStatus("success");
+          setMessage("Successfully subscribed! Check your inbox for a welcome email.");
+        }
         setEmail("");
       } else {
         const data = (await response.json().catch(() => null)) as { error?: string } | null;

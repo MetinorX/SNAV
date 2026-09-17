@@ -17,7 +17,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    await addSubscriber(email);
+    const added = await addSubscriber(email);
+    if (!added) {
+      return res.status(200).json({ ok: true, alreadySubscribed: true });
+    }
   } catch {
     return res.status(503).json({ error: "Subscriber store unavailable right now" });
   }
@@ -25,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     await sendMail({
       to: email,
-      subject: "Welcome to SNAV Tourism!",
+      subject: "Welcome to the SNAV Family!",
       html: welcomeEmailHtml(email),
     });
   } catch {
