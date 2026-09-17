@@ -1,4 +1,12 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.snavtourism.com" }],
+      "destination": "https://snavtourism.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/((?!assets/|api/).*)", "destination": "/index.html" }
   ],

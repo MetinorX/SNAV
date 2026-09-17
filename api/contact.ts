@@ -1,4 +1,4 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+﻿import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { sendMail } from "./_lib/mailer";
 import { asString, isEmail, isNonEmpty } from "./_lib/validate";
 import { escapeHtml } from "./_lib/templates";
@@ -14,7 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const name = asString(body.name);
   const email = asString(body.email);
   const phone = asString(body.phone);
-  const subject = asString(body.subject || "New Inquiry from snavtourism.in");
+  const subject = asString(body.subject || "New Inquiry from snavtourism.com");
   const message = asString(body.message);
   const source = asString(body.source || "Contact form");
 

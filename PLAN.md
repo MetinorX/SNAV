@@ -1,7 +1,7 @@
 # SNAV Tourism — Implementation Plan (Batches A–C)
 
 **Status:** Approved by user — implemented batch-wise, one commit + push per batch.
-**Domain used for SEO/emails:** `https://snavtourism.in` · **Analytics:** none · **Admin panel:** separate session later.
+**Domain used for SEO/emails:** `https://snavtourism.com` · **Analytics:** none · **Admin panel:** separate session later.
 
 ---
 
@@ -14,7 +14,7 @@ Zero-dependency tag manager. Props: `title`, `description`, optional `path` (def
 Sets on mount (and on prop change via `useEffect`):
 - `document.title`
 - `<meta name="description">` (upsert)
-- `<link rel="canonical">` → `https://snavtourism.in` + normalized path (no trailing slash, root = `/`)
+- `<link rel="canonical">` → `https://snavtourism.com` + normalized path (no trailing slash, root = `/`)
 - `<meta property="og:title|description|image|url">` (image/url absolute)
 - `<meta name="twitter:title|description|image">`
 
@@ -27,8 +27,8 @@ Use existing titles/descriptions per route (descriptions summarized from page co
 - (Batches C pages get theirs in C.)
 
 ### A3. `index.html`
-- `og:url` = `https://snavtourism.in/`
-- `og:image` / `twitter:image` → absolute `https://snavtourism.in/logo.png`
+- `og:url` = `https://snavtourism.com/`
+- `og:image` / `twitter:image` → absolute `https://snavtourism.com/logo.png`
 - Add JSON-LD `<script type="application/ld+json">` with a `@graph` of:
   - **TravelAgency** (LocalBusiness): name, url, logo, image, telephone `+918652885584`, email `snavtourism@gmail.com`, address (Gopi Cine Mall, 210 / Dombivli West / Maharashtra / IN), opening hours `Mo-Fr 09:00-18:00`, `Sa 10:00-16:00`
   - **WebSite**: url + name + publisher → agency.
@@ -37,7 +37,7 @@ Use existing titles/descriptions per route (descriptions summarized from page co
 Static sitemap, today's date: `/`, `/packages`, `/custom-trips`, `/destinations`, `/gallery`, `/about`, `/contact`.
 
 ### A5. `public/robots.txt`
-Append `Sitemap: https://snavtourism.in/sitemap.xml`.
+Append `Sitemap: https://snavtourism.com/sitemap.xml`.
 
 ### A6. Dependency hygiene
 - `npx update-browserslist-db` (removes the stale browserslist warning)
@@ -65,7 +65,7 @@ Append `Sitemap: https://snavtourism.in/sitemap.xml`.
 ### B3. `api/_lib/` helpers
 - `store.ts` — lazy Upstash Redis client (`@upstash/redis`); `addSubscriber`, `getSubscribers`, `getLastDigestWeek`/`setLastDigestWeek`, ISO-week helper.
 - `mailer.ts` — `nodemailer` transport from env; `sendMail({ to, subject, html })`.
-- `templates.ts` — inline-styled, SNAV-branded HTML (gold/emerald, logo at `https://snavtourism.in/logo.png`):
+- `templates.ts` — inline-styled, SNAV-branded HTML (gold/emerald, logo at `https://snavtourism.com/logo.png`):
   - `welcomeEmailHtml(email)` — welcome copy + CTA to `/packages`.
   - `weeklyNewsletterHtml()` — static digest of featured destinations for now (becomes admin-editable later).
 - `validate.ts` — email format + required-field helpers.

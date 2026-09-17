@@ -114,6 +114,23 @@
 
 ---
 
+## Phase 7: Domain migration `.in` → `.com` + www redirect
+
+| # | Item | Status |
+|---|------|--------|
+| 61 | `src/components/Seo.tsx` — `SITE_URL` → `https://snavtourism.com` | Done |
+| 62 | `index.html` — og:url, og:image, twitter:image, JSON-LD `@graph` (`#agency`, `#website` ids, url, logo, image) | Done |
+| 63 | `public/sitemap.xml` — all 7 `<loc>` entries | Done |
+| 64 | `public/robots.txt` — `Sitemap:` line | Done |
+| 65 | `api/_lib/templates.ts` — footer text + 2 CTA links to `/packages` | Done |
+| 66 | `api/contact.ts` — default inquiry subject | Done |
+| 67 | `vercel.json` — `www.snavtourism.com` → `https://snavtourism.com` 308 redirect (requires www domain attached in Vercel) | Done |
+| 68 | `PLAN.md` — doc refs updated for consistency | Done |
+
+**User-side Vercel steps remaining:** Attach `snavtourism.com` as production domain + `www.snavtourism.com` (CNAME) as redirect alias.
+
+---
+
 ## Build / Lint Status
 
 - `npm run build` passes (Vite 5). JS 475.34 kB (gzip 146.73 kB) after Batch C pages (no `/pattern.svg` warning).

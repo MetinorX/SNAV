@@ -1,4 +1,4 @@
-import type { NewsletterData } from "./ai";
+﻿import type { NewsletterData } from "./ai";
 
 export const escapeHtml = (value: unknown): string => {
   return String(value).replace(/[&<>"']/g, (char) => {
@@ -57,7 +57,7 @@ const shareFooter = (): string => {
     SNAV Tourism · Gopi Cine Mall, 210, Dombivli West, Maharashtra
   </p>
   <p style="margin:0;color:#94a3b8;font-size:11px;line-height:1.6;">
-    You are receiving this email because you subscribed at snavtourism.in.
+    You are receiving this email because you subscribed at snavtourism.com.
     <br />To reach us: +91 8652885584 · snavtourism@gmail.com
     <br /><a href="mailto:snavtourism@gmail.com?subject=Unsubscribe" style="color:${GOLD};">Unsubscribe</a>
   </p>`;
@@ -75,7 +75,7 @@ export const welcomeEmailHtml = (email: string): string => {
       Dreaming of Kashmir's valleys, Rajasthan's forts, or Kerala's backwaters? Our experts are one message away.
     </p>
     <p style="margin:0;">
-      <a href="https://snavtourism.in/packages" style="display:inline-block;background-color:${GOLD};color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:6px;font-size:14px;font-weight:bold;">Explore Tour Packages</a>
+      <a href="https://snavtourism.com/packages" style="display:inline-block;background-color:${GOLD};color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:6px;font-size:14px;font-weight:bold;">Explore Tour Packages</a>
     </p>`;
   return shell(body, shareFooter());
 };
@@ -109,7 +109,7 @@ export const weeklyNewsletterHtml = (data: NewsletterData): string => {
       : ""}
     ${quoteHtml}
     <p style="margin:24px 0 0;">
-      <a href="https://snavtourism.in/packages" style="display:inline-block;background-color:${EMERALD};color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:6px;font-size:14px;font-weight:bold;">Plan With Us</a>
+      <a href="https://snavtourism.com/packages" style="display:inline-block;background-color:${EMERALD};color:#ffffff;text-decoration:none;padding:12px 26px;border-radius:6px;font-size:14px;font-weight:bold;">Plan With Us</a>
     </p>`;
   return shell(body, shareFooter());
 };

@@ -7,7 +7,7 @@ interface SeoProps {
   image?: string;
 }
 
-const SITE_URL = "https://snavtourism.in";
+const SITE_URL = "https://snavtourism.com";
 const DEFAULT_IMAGE = "/logo.png";
 
 const upsertMeta = (attr: "name" | "property", key: string, content: string) => {
