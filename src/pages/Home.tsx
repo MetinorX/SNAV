@@ -1,4 +1,5 @@
 import HeroSlider from "@/components/HeroSlider";
+import NewsletterForm from "@/components/NewsletterForm";
 import PackageCard from "@/components/PackageCard";
 import Seo from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import {
   Sparkles,
   TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
 
 import packageGoa from "@/assets/package-goa.jpg";
 import packageVaranasi from "@/assets/package-varanasi.jpg";
@@ -128,36 +128,6 @@ const featuredPackages = [
 ];
 
 const Home = () => {
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState("");
-
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !email.includes("@")) {
-      setSubmitMessage("Please enter a valid email address");
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitMessage("");
-
-    try {
-      // TODO: Set up EmailJS properly with correct template IDs and publicKey
-      // For now, we just log and show success to avoid broken runtime errors
-      console.log("Newsletter subscription:", email);
-      setSubmitMessage("✓ Successfully subscribed! Check your inbox for a welcome email.");
-      setEmail("");
-    } catch (error) {
-      console.error("Newsletter subscription error:", error);
-      setSubmitMessage("✗ Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => setSubmitMessage(""), 5000);
-    }
-  };
-
   return (
     <div className="min-h-screen">
       <Seo
@@ -301,35 +271,7 @@ const Home = () => {
               Get early bird offers, travel inspiration, and exclusive India tour deals
               delivered to your inbox
             </p>
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                required
-                disabled={isSubmitting}
-                className="flex-1 px-6 py-4 rounded-lg bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/30 text-primary-foreground placeholder:text-primary-foreground/60 focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
-              />
-              <Button 
-                variant="hero" 
-                size="lg" 
-                className="px-8"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? "Subscribing..." : "Subscribe"}
-              </Button>
-            </form>
-            {submitMessage && (
-              <p className={`text-sm mt-4 font-semibold ${
-                submitMessage.includes("✓") 
-                  ? "text-green-300" 
-                  : "text-red-300"
-              }`}>
-                {submitMessage}
-              </p>
-            )}
+            <NewsletterForm />
             <p className="text-sm text-primary-foreground/70 mt-4">
               We respect your privacy. Unsubscribe at any time.
             </p>

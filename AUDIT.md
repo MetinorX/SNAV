@@ -75,8 +75,33 @@
 
 ---
 
+## Phase 5: Newsletter, Contact Email & Weekly AI Digest (Batch B)
+
+| # | Item | Status |
+|---|------|--------|
+| 41 | Serverless API layer: `api/_lib/{validate,store,mailer,ai,templates}.ts` | Done — TS typechecked, lint-clean |
+| 42 | `api/subscribe.ts` POST — validates email, adds to Upstash Redis `subscribers` set, sends branded welcome email | Done — `maxDuration: 30` |
+| 43 | `api/contact.ts` POST — forwards enquiry to `CONTACT_TO` (default `snavtourism@gmail.com`) | Done — added as backup to WhatsApp flow, `maxDuration: 30` |
+| 44 | `api/newsletter/send.ts` GET — cron trigger, `Bearer CRON_SECRET` auth, weekly idempotency via `lastDigestWeek`, generates + sends digest to all subscribers | Done — `maxDuration: 300` |
+| 45 | AI digest via NVIDIA NIM (`mistralai/mistral-nemotron`) with retry (2×45s) | Done — layered |
+| 46 | AI fallback model `deepseek-ai/deepseek-v4-flash-0731` (reliable, ~90-100s) if Nemotron fails | Done |
+| 47 | Static branded fallback digest if both models fail | Done |
+| 48 | Email templates: `welcomeEmailHtml` + `weeklyNewsletterHtml` in shared `<shell>` — muted-blank `#f4f2ec` bg, navy `#14233b` + gold `#e2a316` header, emerald `#2a6b4f` CTA | Done — smoke-tested (rendering, escaping, unsubscribe) |
+| 49 | HTML-escape everywhere (incl. `escapeHtml` shared in `templates.ts`); unsubscribe `mailto:` in every footer | Done |
+| 50 | Vercel Cron `0 8 * * 6` (Sat 08:00 UTC) via `vercel.json`; rewrite excludes `/api/` | Done |
+| 51 | Dependencies: +`nodemailer`, `@upstash/redis`; dev +`@types/nodemailer`, `@vercel/node`; `@emailjs/browser` removed | Done |
+| 52 | Frontend: `NewsletterForm` (hero + footer variants), Home/Footer wired, Contact submits both WhatsApp + `/api/contact` (async, never blocks WhatsApp) | Done |
+| 53 | `eslint.config.js` — node globals for `api/**/*.ts`; env examples in `.env.example` (tracked, placeholders), real key only in gitignored `.env.local` | Done |
+
+**Notes**
+- NIM key (`nvapi-…`) is **scoped**: `/v1/models` lists full catalog but the account only has `mistralai/mistral-nemotron` + `deepseek-ai/deepseek-v4-flash-0731`; everything else 404s. Nemotron is fast when healthy but intermittently errors (500/hang), hence the deepseek fallback.
+- Requires user SMTP credentials + Upstash Redis creds in Vercel env; live send test after deployment.
+- `npm audit`: 21 remaining (dev-only transitive, none production).
+
+---
+
 ## Build / Lint Status
 
 - `npm run build` passes (Vite 5). JS 342.95 kB (gzip 106.02 kB). No `/pattern.svg` warning anymore.
 - `npm run lint` — 0 errors. 7 pre-existing `react-refresh/only-export-components` warnings in `src/components/ui/*` (shadcn/ui generated files) — left as-is, cosmetic only.
-- `npm audit`: 17 remaining (dev-only build tooling); prod runtime deps clean after `react-router-dom` 6.30.6 (Batch A).
+- `npm audit`: 21 remaining (dev-only build tooling); prod runtime deps clean after `react-router-dom` 6.30.6 (Batch A).

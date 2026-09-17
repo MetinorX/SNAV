@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import NewsletterForm from "@/components/NewsletterForm";
 
 const Footer = () => {
   return (
@@ -126,13 +125,7 @@ const Footer = () => {
               <h4 className="text-sm font-semibold mb-3">
                 Join Our Travel Community
               </h4>
-              <div className="flex gap-2">
-                <Button variant="hero" size="default" asChild>
-                  <a href="mailto:snavtourism@gmail.com?subject=Newsletter%20Subscription">
-                    Subscribe
-                  </a>
-                </Button>
-              </div>
+              <NewsletterForm variant="footer" />
             </div>
           </div>
         </div>

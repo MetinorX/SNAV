@@ -14,12 +14,13 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [isSending, setIsSending] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleWhatsApp = (e: React.FormEvent) => {
+  const handleWhatsApp = async (e: React.FormEvent) => {
     e.preventDefault();
     const { firstName, email, phone, message, lastName, subject } = formData;
 
@@ -39,6 +40,26 @@ const Contact = () => {
 
     const url = `https://wa.me/8652885584?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
+
+    setIsSending(true);
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`.trim(),
+          email: email || "",
+          phone,
+          subject: subject || "New Inquiry",
+          message,
+          source: "Contact form",
+        }),
+      });
+    } catch {
+      // Email copy is best-effort; never block the WhatsApp flow.
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -84,8 +105,8 @@ const Contact = () => {
                 onChange={handleChange}
               />
 
-              <Button type="submit" size="lg" className="w-full bg-[#25D366] hover:bg-[#1eaf56] text-white">
-                <Phone className="w-5 h-5 mr-2" /> Send via WhatsApp
+              <Button type="submit" size="lg" className="w-full bg-[#25D366] hover:bg-[#1eaf56] text-white" disabled={isSending}>
+                <Phone className="w-5 h-5 mr-2" /> {isSending ? "Sending..." : "Send via WhatsApp"}
               </Button>
             </form>
           </div>
