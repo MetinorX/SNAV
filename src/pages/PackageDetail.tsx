@@ -30,7 +30,7 @@ import {
   BOOKING_CONTACTS,
   type TourPackage,
 } from "@/data/packages";
-import { useParallax, useScrollProgress } from "@/lib/useInView";
+import { useParallax, useScrollProgress, useTimelineParallax } from "@/lib/useInView";
 import { cn } from "@/lib/utils";
 
 const priceLabel = (price: number): string => `₹${price.toLocaleString("en-IN")}`;
@@ -52,13 +52,13 @@ const SectionHeading = ({ icon, kicker, title }: { icon: React.ReactNode; kicker
 
 /* ---------- Generic list ---------- */
 const CheckList = ({ items, color = "emerald" }: { items: string[]; color?: "emerald" | "sunset" }) => (
-  <ul className="grid gap-2.5 sm:grid-cols-2">
+  <ul className="flex flex-col gap-2">
     {items.map((item, index) => (
-      <Reveal key={index} delay={index * 45} as="li">
-        <li className="flex items-start gap-2.5 rounded-lg bg-card p-3 text-sm leading-relaxed text-muted-foreground shadow-sm">
+      <Reveal key={index} delay={index * 35} as="li">
+        <li className="flex items-start gap-3 rounded-lg bg-card px-4 py-3 text-sm leading-relaxed text-muted-foreground shadow-sm">
           <span
             className={cn(
-              "mt-0.5 h-2 w-2 shrink-0 rounded-full",
+              "mt-1.5 h-2 w-2 shrink-0 rounded-full",
               color === "emerald" ? "bg-emerald" : "bg-sunset"
             )}
           />
@@ -111,11 +111,21 @@ const PricingTable = ({ pkg }: { pkg: TourPackage }) => (
           {pkg.bookingAmount}
         </p>
       )}
-      {pkg.pricingNotes?.map((note, index) => (
-        <p key={index} className="text-sm leading-relaxed text-muted-foreground">
-          {note}
-        </p>
-      ))}
+      {pkg.pricingNotes && pkg.pricingNotes.length > 0 && (
+        <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+          <p className="border-b bg-muted/40 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-muted-foreground">
+            Notes
+          </p>
+          <ul className="divide-y divide-border">
+            {pkg.pricingNotes.map((note, index) => (
+              <li key={index} className="flex items-start gap-3 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                {note}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Reveal>
 
     {pkg.childPolicy && (
@@ -140,30 +150,36 @@ const PricingTable = ({ pkg }: { pkg: TourPackage }) => (
 
 /* ---------- Stay & meal + hotels ---------- */
 const StaysSection = ({ pkg }: { pkg: TourPackage }) => (
-  <div className="grid gap-8 lg:grid-cols-2">
+  <div className="space-y-6">
+    {/* Stay & Meal Plan — full width, no scrollbar */}
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <p className="border-b bg-muted/40 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-accent">
         Stay & Meal Plan
       </p>
-      <div className="max-h-[420px] overflow-y-auto divide-y divide-border">
+      <div className="divide-y divide-border">
         {pkg.stayPlan.map((row, index) => (
-          <div key={index} className="px-4 py-2.5">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-semibold text-foreground">Day {row.day}</span>
-              <UtensilsCrossed className="h-3.5 w-3.5 shrink-0 text-accent" />
+          <div key={index} className="flex items-center gap-4 px-4 py-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+              {row.day}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-foreground">{row.accommodation}</p>
             </div>
-            <p className="text-sm text-muted-foreground">{row.accommodation}</p>
-            <p className="text-xs text-accent">{row.meals}</p>
+            <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+              <UtensilsCrossed className="h-3 w-3 text-accent" />
+              {row.meals}
+            </div>
           </div>
         ))}
       </div>
     </div>
 
+    {/* Hotels — full width below */}
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <p className="border-b bg-muted/40 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-accent">
         Hotels
       </p>
-      <div className="divide-y divide-border">
+      <div className="grid gap-0 divide-y divide-border sm:grid-cols-2">
         {pkg.hotels.map((row, index) => (
           <div key={index} className="flex items-start justify-between gap-3 px-4 py-3">
             <span className="text-sm font-semibold text-foreground">
@@ -187,6 +203,7 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
   const [openDay, setOpenDay] = useState<number | null>(0);
   const dayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeDay, setActiveDay] = useState(0);
+  const parallaxOffsets = useTimelineParallax(dayRefs, pkg.days.length, 0.055);
 
   useEffect(() => {
     let raf = 0;
@@ -219,6 +236,11 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
     };
   }, [pkg.days]);
 
+  // Auto-open the card that scrolls into the active (centre-most) position
+  useEffect(() => {
+    setOpenDay(activeDay);
+  }, [activeDay]);
+
   return (
     <div ref={progressRef} className="relative">
       {/* rail */}
@@ -242,13 +264,13 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
               }}
               className="relative"
             >
-              {/* node */}
+              {/* node — sits on the rail: left-[22px] on mobile, left-1/2 on desktop */}
               <button
                 type="button"
                 aria-label={`Toggle Day ${index + 1}`}
                 onClick={() => setOpenDay(isOpen ? null : index)}
                 className={cn(
-                  "absolute top-8 left-0 z-10 flex h-11 w-11 -translate-x-[50%] items-center justify-center rounded-full font-display text-lg font-bold ring-4 transition-all duration-500",
+                  "absolute top-8 left-[22px] z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full font-display text-lg font-bold ring-4 transition-all duration-500 md:left-1/2",
                   isActive
                     ? "scale-110 bg-emerald text-white ring-emerald/25"
                     : "bg-primary text-primary-foreground ring-accent/30 hover:scale-110"
@@ -257,7 +279,7 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
                 {index + 1}
               </button>
 
-              {/* card */}
+              {/* card — parallax offset drives a subtle split-column depth effect */}
               <div
                 className={cn(
                   "pl-16 md:pl-0",
@@ -265,6 +287,10 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
                     ? "md:pr-[calc(50%+3rem)]"
                     : "md:pl-[calc(50%+3rem)]"
                 )}
+                style={{
+                  transform: `translateY(${parallaxOffsets[index] ?? 0}px)`,
+                  willChange: "transform",
+                }}
               >
                 <Reveal direction={isLeft ? "left" : "right"} delay={index * 60}>
                   <div
@@ -332,17 +358,21 @@ const ItineraryTimeline = ({ pkg }: { pkg: TourPackage }) => {
 /* ---------- Cancellation ---------- */
 const CancellationSection = ({ pkg }: { pkg: TourPackage }) => (
   <div className="space-y-6">
+    {/* Key points — full-width card list */}
     <Reveal>
-      <ul className="grid gap-2.5 sm:grid-cols-2">
-        {pkg.cancellationPoints.map((point, index) => (
-          <li key={index} className="flex items-start gap-2.5 rounded-lg bg-card p-3 text-sm leading-relaxed text-muted-foreground shadow-sm">
-            <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-sunset" />
-            <span>{point}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+        <ul className="divide-y divide-border">
+          {pkg.cancellationPoints.map((point, index) => (
+            <li key={index} className="flex items-start gap-3 px-4 py-3.5 text-sm leading-relaxed text-muted-foreground">
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-sunset" />
+              <span>{point}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </Reveal>
 
+    {/* Deduction table */}
     <Reveal delay={80}>
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <p className="border-b bg-muted/40 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-sunset">
@@ -359,11 +389,21 @@ const CancellationSection = ({ pkg }: { pkg: TourPackage }) => (
       </div>
     </Reveal>
 
-    {pkg.cancellationTail?.map((line, index) => (
-      <Reveal key={index} delay={120}>
-        <p className="text-sm leading-relaxed text-muted-foreground">{line}</p>
+    {/* Tail notes — styled info card */}
+    {pkg.cancellationTail && pkg.cancellationTail.length > 0 && (
+      <Reveal delay={120}>
+        <div className="overflow-hidden rounded-xl border border-sunset/30 bg-sunset/5 shadow-sm">
+          <ul className="divide-y divide-sunset/10">
+            {pkg.cancellationTail.map((line, index) => (
+              <li key={index} className="flex items-start gap-3 px-4 py-3.5 text-sm leading-relaxed text-muted-foreground">
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-sunset/70" />
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </Reveal>
-    ))}
+    )}
   </div>
 );
 
@@ -585,16 +625,20 @@ const PackageDetail = () => {
             kicker="The fine print"
             title="Terms & Conditions"
           />
-          <Reveal>
-            <ul className="space-y-2.5">
+          <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+            <ul className="divide-y divide-border">
               {pkg.terms.map((term, index) => (
-                <li key={index} className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground">
-                  <span className="mt-0.5 shrink-0 font-bold text-accent">{index + 1}.</span>
-                  <span>{term}</span>
-                </li>
+                <Reveal key={index} delay={index * 30} as="li">
+                  <li className="flex items-start gap-4 px-4 py-3.5">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">
+                      {index + 1}
+                    </span>
+                    <span className="text-sm leading-relaxed text-muted-foreground">{term}</span>
+                  </li>
+                </Reveal>
               ))}
             </ul>
-          </Reveal>
+          </div>
         </section>
 
         {/* ===== Cancellation ===== */}
