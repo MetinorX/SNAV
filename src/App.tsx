@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -21,24 +22,26 @@ const App = () => (
     <Toaster />
     <Sonner />
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
-        <Navigation />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/packages" element={<Packages />} />
-            <Route path="/packages/:slug" element={<PackageDetail />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/custom-trips" element={<CustomTrips />} />
-            <Route path="/destinations" element={<Destinations />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-        <WhatsAppButton />
-      </div>
+      <ErrorBoundary>
+        <div className="flex flex-col min-h-screen">
+          <Navigation />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/packages" element={<Packages />} />
+              <Route path="/packages/:slug" element={<PackageDetail />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/custom-trips" element={<CustomTrips />} />
+              <Route path="/destinations" element={<Destinations />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+          <WhatsAppButton />
+        </div>
+      </ErrorBoundary>
     </BrowserRouter>
     <Analytics />
   </TooltipProvider>

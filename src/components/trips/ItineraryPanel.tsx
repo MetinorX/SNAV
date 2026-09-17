@@ -70,7 +70,7 @@ export const ItineraryPanel = ({ itinerary, generating, onRefine, onConfirm }: I
               {itinerary.budgetEstimate}
             </p>
           )}
-          {itinerary.notes.length > 0 && (
+          {itinerary.notes?.length > 0 && (
             <ul className="list-disc space-y-1 pl-5 text-xs leading-relaxed text-muted-foreground">
               {itinerary.notes.map((note, index) => (
                 <li key={index}>{note}</li>

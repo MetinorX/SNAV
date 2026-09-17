@@ -72,7 +72,7 @@ export const TripContact = ({ itinerary, profile, isSubmitting, onBack, onSubmit
           {profile.budgetPerPerson && (
             <li>Budget: Rs. {profile.budgetPerPerson.toLocaleString("en-IN")} per person</li>
           )}
-          {profile.interests.length > 0 && <li>Interests: {profile.interests.join(", ")}</li>}
+          {profile.interests?.length > 0 && <li>Interests: {profile.interests.join(", ")}</li>}
           {profile.occasion && <li>Occasion: {profile.occasion}</li>}
           <li>Plan: {itinerary.title} — {itinerary.days.length} day(s)</li>
         </ul>

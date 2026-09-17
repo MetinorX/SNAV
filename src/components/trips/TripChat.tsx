@@ -30,7 +30,7 @@ const profileChips = (profile: Partial<TripProfile>): string[] => {
   if (profile.durationDays) chips.push(`${profile.durationDays} days`);
   if (profile.travelers) chips.push(`${profile.travelers} traveler${profile.travelers > 1 ? "s" : ""}`);
   if (profile.budgetPerPerson) chips.push(`Rs. ${profile.budgetPerPerson.toLocaleString("en-IN")}/person`);
-  if (profile.interests.length) chips.push(profile.interests.slice(0, 3).join(", "));
+  if (profile.interests?.length) chips.push(profile.interests.slice(0, 3).join(", "));
   if (profile.occasion) chips.push(profile.occasion);
   return chips.slice(0, 5);
 };

@@ -26,9 +26,53 @@ const greeting: ChatMessage = {
     "Namaste! I'm Aria, your SNAV trip designer. Let's shape a trip that feels like you — a destination, a season, a few days, or just the start of a dream all work. What's on your mind?",
 };
 
+const normalizeProfile = (profile: Partial<TripProfile> | null | undefined): Partial<TripProfile> => {
+  const source = profile ?? {};
+  return {
+    destination: source.destination ?? "",
+    month: source.month ?? "",
+    durationDays: source.durationDays,
+    travelers: source.travelers,
+    travelerNote: source.travelerNote ?? "",
+    budgetPerPerson: source.budgetPerPerson,
+    interests: Array.isArray(source.interests) ? source.interests : [],
+    occasion: source.occasion ?? "",
+    pace: source.pace ?? "",
+    style: source.style ?? "",
+    needs: Array.isArray(source.needs) ? source.needs : [],
+  };
+};
+
+const normalizeItinerary = (itinerary: TripItinerary | null | undefined): TripItinerary | null => {
+  if (!itinerary) return null;
+  if (!Array.isArray(itinerary.days) || itinerary.days.length === 0) return null;
+  return {
+    title: itinerary.title ?? "Your Custom India Getaway",
+    vibe: itinerary.vibe ?? "",
+    overview: itinerary.overview ?? "",
+    seasonNote: itinerary.seasonNote ?? "",
+    days: itinerary.days,
+    budgetEstimate: itinerary.budgetEstimate ?? "",
+    notes: Array.isArray(itinerary.notes) ? itinerary.notes : [],
+  };
+};
+
+const normalizeMessages = (messages: unknown): ChatMessage[] => {
+  if (!Array.isArray(messages)) return [];
+  return messages.filter(
+    (message): message is ChatMessage =>
+      Boolean(message) &&
+      typeof message === "object" &&
+      ("role" in message) &&
+      ("content" in message) &&
+      ((message as ChatMessage).role === "user" || (message as ChatMessage).role === "assistant") &&
+      typeof (message as ChatMessage).content === "string"
+  );
+};
+
 const freshState = (): PersistedState => ({
   messages: [greeting],
-  profile: {},
+  profile: normalizeProfile({}),
   readyForItinerary: false,
   itinerary: null,
   phase: "chat",
@@ -39,13 +83,18 @@ const loadState = (): PersistedState => {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<PersistedState>;
-      if (parsed && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
+      const messages = normalizeMessages(parsed.messages);
+      if (messages.length > 0) {
+        const itinerary = normalizeItinerary(parsed.itinerary);
+        const phase: PersistedState["phase"] = itinerary
+          ? parsed.phase === "preview" || parsed.phase === "contact" ? parsed.phase : "chat"
+          : "chat";
         return {
-          messages: parsed.messages,
-          profile: parsed.profile ?? {},
+          messages,
+          profile: normalizeProfile(parsed.profile),
           readyForItinerary: Boolean(parsed.readyForItinerary),
-          itinerary: parsed.itinerary ?? null,
-          phase: parsed.phase === "preview" || parsed.phase === "contact" ? parsed.phase : "chat",
+          itinerary,
+          phase,
         };
       }
     }
@@ -70,7 +119,7 @@ const buildWhatsAppSummary = (
     profile.durationDays ? `Duration: ${profile.durationDays} day(s)` : "",
     profile.travelers ? `Travelers: ${profile.travelers}${profile.travelerNote ? ` (${profile.travelerNote})` : ""}` : "",
     profile.budgetPerPerson ? `Budget: Rs. ${profile.budgetPerPerson.toLocaleString("en-IN")} per person` : "",
-    profile.interests.length > 0 ? `Interests: ${profile.interests.join(", ")}` : "",
+    profile.interests?.length > 0 ? `Interests: ${profile.interests.join(", ")}` : "",
     profile.occasion ? `Occasion: ${profile.occasion}` : "",
     `Plan: ${itinerary.title} (${itinerary.days.length} days)`,
     "---",
@@ -115,7 +164,7 @@ const CustomTrips = () => {
         setState((current) => ({
           ...current,
           messages: [...messages, { role: "assistant", content: data.reply as string }],
-          profile: { ...current.profile, ...(data.profile ?? {}) },
+          profile: normalizeProfile({ ...current.profile, ...(data.profile ?? {}) }),
           readyForItinerary: Boolean(data.readyForItinerary),
         }));
       } else {
@@ -138,7 +187,12 @@ const CustomTrips = () => {
       });
       const data = (await response.json()) as { ok?: boolean; itinerary?: TripItinerary };
       if (response.ok && data.itinerary) {
-        setState((current) => ({ ...current, itinerary: data.itinerary as TripItinerary, phase: "preview" }));
+        const itinerary = normalizeItinerary(data.itinerary as TripItinerary);
+        if (itinerary) {
+          setState((current) => ({ ...current, itinerary, phase: "preview" }));
+        } else {
+          toast.error("The itinerary draft didn't come together. Mind trying once more?");
+        }
       } else {
         toast.error("The itinerary draft didn't come together. Mind trying once more?");
       }

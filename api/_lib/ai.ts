@@ -1,4 +1,4 @@
-export interface NewsletterDestination {
+﻿export interface NewsletterDestination {
   name: string;
   description: string;
 }
@@ -57,8 +57,8 @@ const NIM_BASE_URL = process.env.NVIDIA_NIM_URL || "https://integrate.api.nvidia
 const NIM_MODEL = process.env.NVIDIA_NIM_MODEL || "mistralai/mistral-nemotron";
 const NIM_FALLBACK_MODEL = process.env.NVIDIA_FALLBACK_MODEL || "deepseek-ai/deepseek-v4-flash-0731";
 const PRIMARY_ATTEMPTS = 2;
-const PRIMARY_TIMEOUT_MS = 45000;
-const FALLBACK_TIMEOUT_MS = 110000;
+const PRIMARY_TIMEOUT_MS = 20000;
+const FALLBACK_TIMEOUT_MS = 15000;
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -154,7 +154,7 @@ export const generateNewsletter = async (): Promise<NewsletterData> => {
     } catch (error) {
       lastError = error;
       if (attempt < PRIMARY_ATTEMPTS) {
-        await sleep(1500);
+        await sleep(750);
       }
     }
   }
@@ -171,16 +171,16 @@ export const fallbackNewsletter = (): NewsletterData => ({
   intro:
     "Welcome to your weekly dose of wanderlust from SNAV Tourism. This week we shine a light on three destinations that deserve a spot on your travel map.",
   destinations: [
-    { name: "Kashmir", description: "Eighty valleys of timeless beauty — shikara rides, saffron fields, and snow-dusted peaks." },
-    { name: "Rajasthan", description: "Palaces, forts, and desert dunes — a royal circuit that never stops surprising." },
+    { name: "Kashmir", description: "Eighty valleys of timeless beauty â€” shikara rides, saffron fields, and snow-dusted peaks." },
+    { name: "Rajasthan", description: "Palaces, forts, and desert dunes â€” a royal circuit that never stops surprising." },
     { name: "Kerala", description: "Slow mornings on backwaters and misty tea hills in God's Own Country." },
   ],
   tips: [
     "Book shoulder-season dates for the best fares and crowds.",
-    "Keep a scarf handy — it doubles for sun, temples, and cool evenings.",
+    "Keep a scarf handy â€” it doubles for sun, temples, and cool evenings.",
     "Taste the local street food; it is the fastest way into any city.",
   ],
-  quote: "“The world is a book, and those who do not travel read only one page.” — Saint Augustine",
+  quote: "â€œThe world is a book, and those who do not travel read only one page.â€ â€” Saint Augustine",
 });
 
 const asNum = (value: unknown): number | undefined => {
@@ -291,7 +291,7 @@ export const extractProfileFromTranscript = (messages: ChatMessage[]): Partial<T
     profile.travelerNote = profile.travelerNote || "Family";
   }
 
-  const budgetMatch = /(?:rs\.?\s?|inr\s?|₹)([\d,.]+)/i.exec(text);
+  const budgetMatch = /(?:rs\.?\s?|inr\s?|â‚¹)([\d,.]+)/i.exec(text);
   if (budgetMatch) {
     profile.budgetPerPerson = Number(budgetMatch[1].replace(/[^\d]/g, ""));
   }
@@ -395,7 +395,7 @@ export const tripChat = async (messages: ChatMessage[]): Promise<TripChatTurn> =
     } catch (error) {
       lastError = error;
       if (attempt < PRIMARY_ATTEMPTS) {
-        await sleep(1500);
+        await sleep(750);
       }
     }
   }
@@ -480,7 +480,7 @@ export const buildTripItinerary = async (profile: Partial<TripProfile>, refineHi
     } catch (error) {
       lastError = error;
       if (attempt < PRIMARY_ATTEMPTS) {
-        await sleep(1500);
+        await sleep(750);
       }
     }
   }
@@ -548,7 +548,7 @@ export const fallbackTripItinerary = (profile: Partial<TripProfile>, refineHint?
   const notes = [
     `Itinerary built around ${destination}${month || ", dates flexible"}`,
     profile.budgetPerPerson ? `Budget kept near Rs. ${profile.budgetPerPerson.toLocaleString("en-IN")} per person` : "Budget to be fine-tuned with our experts",
-    refineHint ? `Refinement applied: ${refineHint}` : "Realistic pace—shuffle days freely, we can reorder on your word",
+    refineHint ? `Refinement applied: ${refineHint}` : "Realistic paceâ€”shuffle days freely, we can reorder on your word",
     "Availability and exact bookings to be confirmed by the SNAV team",
   ];
 
@@ -556,7 +556,7 @@ export const fallbackTripItinerary = (profile: Partial<TripProfile>, refineHint?
     title: `${destination} Escape`,
     vibe: occasion ? `Warm, private and moment-worthy` : "Balanced, comfortable and memorable",
     overview: `A ${maxDays}-day journey through ${destination}${month}${travelers}. It weaves the best of the region with a pace that feels right for you.`,
-    seasonNote: profile.month ? `Peak local conditions in ${profile.month}—best booked 4–6 weeks ahead.` : "",
+    seasonNote: profile.month ? `Peak local conditions in ${profile.month}â€”best booked 4â€“6 weeks ahead.` : "",
     days,
     budgetEstimate: "Rough per-person band to be confirmed after the experts review availability",
     notes,
@@ -568,9 +568,9 @@ export const fallbackTripChat = (messages: ChatMessage[], hint: Partial<TripProf
     { missing: (p) => !p.destination, question: "So, where in India are we dreaming about? A state, a town, or even a rough vibe is a great start." },
     { missing: (p) => !p.month, question: "Around what time would you like to go? A month or season works perfectly." },
     { missing: (p) => !p.durationDays, question: "How many days would you like to spend on the road?" },
-    { missing: (p) => !p.travelers, question: "Who's coming along — just you two, friends, or the whole family?" },
+    { missing: (p) => !p.travelers, question: "Who's coming along â€” just you two, friends, or the whole family?" },
     { missing: (p) => !p.budgetPerPerson, question: "Do you have a budget per person in mind? It helps us match the right stays and experiences." },
-    { missing: (p) => !p.occasion && p.interests.length === 0, question: "And what would make this trip special — an occasion, or a few things you love doing?" },
+    { missing: (p) => !p.occasion && p.interests.length === 0, question: "And what would make this trip special â€” an occasion, or a few things you love doing?" },
     { missing: (p) => !p.pace, question: "Should we keep this relaxed and slow, or squeeze in as much as possible?" },
     { missing: () => false, question: "You're all set for a preview! Press 'Generate my itinerary' and I'll put a first draft together." },
   ];
@@ -578,7 +578,7 @@ export const fallbackTripChat = (messages: ChatMessage[], hint: Partial<TripProf
   const next = askOrder.find((item) => item.missing(hint));
   const ready = isReadyForItinerary(hint);
   const reply = ready
-    ? "Wonderful — that's everything I need for a first draft! Press 'Generate my itinerary' and I'll put something special together."
+    ? "Wonderful â€” that's everything I need for a first draft! Press 'Generate my itinerary' and I'll put something special together."
     : (next?.question ?? "Anything else you'd like to share about this trip?");
 
   return { reply, profile: hint, readyForItinerary: ready };
