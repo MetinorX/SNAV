@@ -230,10 +230,10 @@ export const tourPackages: TourPackage[] = [
       { day: "10", accommodation: "Reach Mumbai", meals: "Not included" },
     ],
     hotels: [
-      { location: "Shimla", hotels: "De Park / Hill Crest / Similar" },
-      { location: "Manali", hotels: "Rohtang Height / Chamunda Heaven / Similar" },
-      { location: "Dharamshala", hotels: "Angels Inn / Karnika / Similar" },
-      { location: "Amritsar", hotels: "Quality Inn / Grand Cabbana / Similar" },
+      { location: "Shimla", hotels: "3 Star Luxury" },
+      { location: "Manali", hotels: "3 Star Luxury" },
+      { location: "Dharamshala", hotels: "3 Star Luxury" },
+      { location: "Amritsar", hotels: "3 Star Luxury" },
     ],
     terms: [
       "SNAV Tourism LLP is not responsible for additional charges from unforeseen events — accidents, vehicle breakdowns, riots, train delays, etc.",
@@ -383,10 +383,10 @@ export const tourPackages: TourPackage[] = [
       { day: "9", accommodation: "Arrive in Mumbai", meals: "No meals" },
     ],
     hotels: [
-      { location: "Jim Corbett", hotels: "Corbett View Resort / Similar" },
-      { location: "Nainital", hotels: "Dynasty / Four Farm / Similar" },
-      { location: "Mussoorie", hotels: "Shiva Continental / Similar" },
-      { location: "Rishikesh", hotels: "Shivansh Inn / Pinaki Inn / Similar" },
+      { location: "Jim Corbett", hotels: "3 Star Luxury" },
+      { location: "Nainital", hotels: "3 Star Luxury" },
+      { location: "Mussoorie", hotels: "3 Star Luxury" },
+      { location: "Rishikesh", hotels: "3 Star Luxury" },
     ],
     terms: [
       "The organisers/company are not responsible for additional price due to accidents, vehicle breakdown, riot, train delay, etc.",
@@ -542,10 +542,10 @@ export const tourPackages: TourPackage[] = [
       { day: "9", accommodation: "Reach Mumbai", meals: "Not included" },
     ],
     hotels: [
-      { location: "Jodhpur", hotels: "Chandra Grand / Kuchaman Haveli / Similar" },
-      { location: "Jaisalmer", hotels: "Rajputana Desert Camp / Similar" },
-      { location: "Jaipur", hotels: "Laxmi Niwas / Amer Valley / Similar" },
-      { location: "Udaipur", hotels: "The Belmonte House / Riddhi Inn / Similar" },
+      { location: "Jodhpur", hotels: "3 Star Luxury" },
+      { location: "Jaisalmer", hotels: "3 Star Luxury" },
+      { location: "Jaipur", hotels: "3 Star Luxury" },
+      { location: "Udaipur", hotels: "3 Star Luxury" },
     ],
     terms: [
       "SNAV Tourism LLP is not responsible for additional charges from unforeseen events — accidents, vehicle breakdowns, riots, train delays, etc.",
@@ -685,9 +685,9 @@ export const tourPackages: TourPackage[] = [
       { day: "6", accommodation: "Reach Mumbai / Pune", meals: "Not included" },
     ],
     hotels: [
-      { location: "Hampi", hotels: "Local hotel (thali / plate-wise dining)" },
-      { location: "Honnavar", hotels: "Homestay" },
-      { location: "Gokarna", hotels: "Local hotel with homemade cuisine" },
+      { location: "Hampi", hotels: "3 Star Luxury" },
+      { location: "Honnavar", hotels: "3 Star Luxury" },
+      { location: "Gokarna", hotels: "3 Star Luxury" },
     ],
     terms: [
       "The company is not responsible for additional price due to accidents, vehicle breakdown, riot, train delay, etc.",
